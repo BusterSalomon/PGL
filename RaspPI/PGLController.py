@@ -31,7 +31,7 @@ class PGLController:
                                                  on_message_clbk=self.__zigbee2mqtt_event_received)
 
         # initialize zone controller object and tim
-        self.__zone_controller = PGLZoneController()
+        self.__zone_controller = PGLZoneController(devices_model)
 
     def start(self) -> None:
         """ Start listening for zigbee2mqtt events.
@@ -87,8 +87,8 @@ class PGLController:
             else:
                 # Pass data and topic to the zone controller which returns (optional) a journey object and lights to be turned on
                 # journey is a dict with the zones and corresponding time interval tuples.
-                journey, lights = self.__zone_controller.control_Zones(
-                    message.data, message.topic)
+                journey, lights = self.__zone_controller.control_zones(
+                    message.event["occupancy"], device.id_)
 
                 # Change the state on all actuators, i.e. LEDs and power plugs (NOTE: should be based on 'lights')
                 for i, a in enumerate(self.__devices_model.actuators_list):
