@@ -1,5 +1,5 @@
 # initialize timer object
-from PGLJourney import PGLJourney
+from PGLJourney import Journey
 
 class PGLZoneController:
     
@@ -8,10 +8,10 @@ class PGLZoneController:
         self.zones = {}
         self.current_zone = None
         for i, device in enumerate(devices):
-            if type == "pir":
-                self.zones.append({device.id_: i})
+            if device.type_ == "pir":
+                self.zones[device.id_] = i
         self.zone_count = len(self.zones)
-        self.Journey = Journey(self.zones)
+        self.journey = Journey(self.zones)
         self.direction = "forward"
 
     def control_zones(self, occupancy, device_id):
@@ -19,10 +19,10 @@ class PGLZoneController:
             zone = self.zones[device_id]
             if self.current_zone == None and zone == 0: # if the user enters the first zone
                 self.current_zone = zone
-                self.Journey.enter_zone(zone)
+                self.journey.enter_zone(zone)
             elif zone + 1 == self.current_zone or zone - 1 == self.current_zone: # if the user enters the next zone
                 self.current_zone = zone
-                self.Journey.enter_zone(zone)
+                self.journey.enter_zone(zone)
                 if zone < self.current_zone: # if the user enters the previous zone
                     self.direction = "backward"
                 else:
@@ -32,6 +32,7 @@ class PGLZoneController:
         # lights is a tuple of the current zone and the next zone, depending on the direction
         lights = (self.current_zone, 
                   self.current_zone + 1 if self.direction == "forward" else self.current_zone - 1) 
+        return self.journey.get_zones(), lights
 
         
 
