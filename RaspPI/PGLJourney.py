@@ -8,7 +8,7 @@ class Journey:
 
     def enter_zone(self, zone):
         self.entered_zones.append(zone)
-        print(self.entered_zones)
+        # print(self.entered_zones)
     
     def get_zones(self):
         return self.entered_zones
