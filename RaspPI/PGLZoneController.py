@@ -1,9 +1,7 @@
-
 # initialize timer object
 from PGLJourney import Journey
 
-        # Inititate active lights to off
-        self.active_lights = [False, False, False, False, False]
+class PGLZoneController:
     
     def __init__(self, devices):
         self.devices = devices
@@ -48,3 +46,7 @@ from PGLJourney import Journey
                     
                 
 
+
+
+
+# controlZones method takes message data (json) and sensor ID
