@@ -1,5 +1,6 @@
 # initialize timer object
 from PGLJourney import PGLJourney
+from PGLServerAPI import PGLServerAPI
 
 class PGLZoneController:
     
@@ -15,7 +16,7 @@ class PGLZoneController:
                                                        # to know when bathroom is visited.
         self.direction = "forward"
 
-        # start PGLServerAPI
+        self.server_api = PGLServerAPI("localhost")
 
 
     def control_zones(self, occupancy, device_id):
@@ -38,24 +39,5 @@ class PGLZoneController:
                   self.current_zone + 1 if self.direction == "forwards" else self.current_zone - 1) 
         
         return self.journey.get_zones(), lights
-
     
     
-
-
-        
-
-            
-                
-                
-
-           
-                
-
-                    
-                
-
-
-
-
-# controlZones method takes message data (json) and sensor ID

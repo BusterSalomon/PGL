@@ -32,18 +32,26 @@ class PGLJourney:
             if self.last_zone in self.zone_times:
                 self.milestones['bathroom'] = True
     
-    def get_journey_to_string (self):
+    def get_journey_to_string (self) -> str:
         journey_time = self.zone_times[0][-1] - self.zone_times[0][0]
-        bathroom_time = self.zone_times[self.last_zone][0]
-        for time in self.zone_times[self.last_zone]:
-        journey_string += f"date: {self.zone_times[0][0]};"
-        
+        if self.milestones['bathroom'] == True:
+            bathroom_start = self.zone_times[self.last_zone][0]
+            for time in self.zone_times[self.last_zone - 1]:
+                if time > bathroom_start:
+                    bathroom_end = time
+                    break
+            bathroom_time = bathroom_end - bathroom_start
+        else:
+            bathroom_time = 'N/A'
+        journey_string = f"{self.zone_times[0][0]}; {journey_time}; {bathroom_time};"
+        return journey_string 
+
              
 
     def get_milestones (self) -> bool:
         return self.milestones
     
-    def timing_worker (self):
+    def timing_worker (self) -> None:
         # Get timelimit for zone
         _, current_zone = self.zone_times[-1]
         zone_time_limit_s = self.ZONE_TIME_LIMITS[current_zone]

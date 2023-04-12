@@ -9,8 +9,6 @@ class Event_:
 
 class PGLServerAPI:
 
-
-
     __EMERGENCY_TYPE = "emergency"
     __JOURNEY_TYPE = "journey"
     __REQUEST_STORE_EVENT_IN_DB_TOPIC = 'PGL/request/store_event'
