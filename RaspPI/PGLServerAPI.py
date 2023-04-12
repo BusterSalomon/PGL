@@ -2,6 +2,8 @@ from paho.mqtt.client import Client as MqttClient, MQTTMessage
 from threading import Event, Thread
 from queue import Empty, Queue
 from dataclasses import dataclass
+from time import sleep
+
 @dataclass
 class Event_:
         type : str
@@ -46,7 +48,7 @@ class PGLServerAPI:
                 if self.__mqtt_client.is_connected():
                     incoming_event : Event_ = self.__events_queue.get(timeout=1)
                 else:
-                    pass
+                    sleep(1)
 
             except Empty:
                 pass
