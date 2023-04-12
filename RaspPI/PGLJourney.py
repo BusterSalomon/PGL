@@ -35,7 +35,7 @@ class PGLJourney:
     def get_journey_to_string (self):
         journey_time = self.zone_times[0][-1] - self.zone_times[0][0]
         bathroom_time = self.zone_times[self.last_zone][0]
-        for time in 
+        for time in self.zone_times[self.last_zone]:
         journey_string += f"date: {self.zone_times[0][0]};"
         
              
