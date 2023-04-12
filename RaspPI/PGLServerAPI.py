@@ -43,7 +43,10 @@ class PGLServerAPI:
     def __worker(self):
         while not self.__stop_worker.is_set():
             try:
-                incoming_event : Event_ = self.__events_queue.get(timeout=1)
+                if self.__mqtt_client.is_connected():
+                    incoming_event : Event_ = self.__events_queue.get(timeout=1)
+                else:
+                    pass
 
             except Empty:
                 pass
