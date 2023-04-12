@@ -4,14 +4,14 @@ import time
 from threading import Event, Thread
 
 
-class PGLJourney:
-    ZONE_TIME_LIMITS = [10, 10, 10, 10, 10]
 
-    def __init__(self, exceeded_zone_timelimit_clbk):
-        # [(timestamp_i, zone_j)]
-        self.zone_times = [()]
-        self.complete_journey = False
-        self.__exceeded_zone_timelimit_clbk = exceeded_zone_timelimit_clbk
+class PGLJourney:
+
+    def __init__(self, last_zone):
+        self.zone_times = {} # {zone: [times]}
+        self.milestones = {'complete': False, 'bathroom': False}
+        self.last_zone = last_zone
+
 
         # Threading
         # self.__timer_thread = Thread(target=self.timing_worker, daemon=True)
@@ -20,15 +20,28 @@ class PGLJourney:
 
     def enter_zone (self, zone):
         self.latest_timestamp = self.get_timestamp()
-        self.zone_times.append((self.latest_timestamp, zone))
+        if self.zone_times[zone] is None:
+            self.zone_times[zone] = [self.latest_timestamp]
+        else:
+            self.zone_times[zone].append(self.latest_timestamp)
 
         # Validate roundtrip
         # If not the first entrance (start) and the zone added is zero
-        if (len(self.zone_times) != 1 and zone == 0):
-            self.complete_journey = True
+        if (len(self.zone_times) != 1 and zone == 0): # to do: logic for if bathroom has been visited
+            self.milestones['complete'] = True 
+            if self.last_zone in self.zone_times:
+                self.milestones['bathroom'] = True
+    
+    def get_journey_to_string (self):
+        journey_time = self.zone_times[0][-1] - self.zone_times[0][0]
+        bathroom_time = self.zone_times[self.last_zone][0]
+        for time in 
+        journey_string += f"date: {self.zone_times[0][0]};"
+        
+             
 
-    def get_is_journey_complete (self) -> bool:
-        return self.complete_journey
+    def get_milestones (self) -> bool:
+        return self.milestones
     
     def timing_worker (self):
         # Get timelimit for zone
@@ -56,7 +69,6 @@ class PGLJourney:
     def seconds_to_milliseconds(sec: int) -> int:
         return -1
     
-
 
 
 
