@@ -1,5 +1,5 @@
 # initialize timer object
-from PGLJourney import Journey
+from PGLJourney import PGLJourney
 
 class PGLZoneController:
     
@@ -11,7 +11,7 @@ class PGLZoneController:
             if device.type_ == "pir":
                 self.zones[device.id_] = i
         self.zone_count = len(self.zones)
-        self.journey = Journey(self.zones)
+        self.journey = PGLJourney(self.zones)
         self.direction = "forward"
 
     def control_zones(self, occupancy, device_id):
