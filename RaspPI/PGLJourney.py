@@ -7,7 +7,7 @@ from threading import Event, Thread
 
 class PGLJourney:
 
-    def __init__(self, last_zone):
+    def __init__(self, last_zone : int):
         self.__zone_times = {} # {zone: [times]}
         self.__milestones = {'complete': False, 'bathroom': False}
         self.__last_zone = last_zone
