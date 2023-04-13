@@ -18,7 +18,7 @@ class PGLJourney:
         # self.__timer_thread.start()
 
 
-    def enter_zone (self, zone):
+    def enter_zone (self, zone : int) -> None:
         self.latest_timestamp = self.get_timestamp()
         if self.__zone_times[zone] is None:
             self.__zone_times[zone] = [self.latest_timestamp]
@@ -47,8 +47,8 @@ class PGLJourney:
         return journey_string 
 
              
-
-    def get___milestones (self) -> bool:
+    # is this returning bool??
+    def get_milestones (self) -> bool:
         return self.__milestones
     
     def timing_worker (self) -> None:
