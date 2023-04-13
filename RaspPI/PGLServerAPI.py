@@ -16,7 +16,7 @@ class PGLServerAPI:
     __REQUEST_STORE_EVENT_IN_DB_TOPIC = 'PGL/request/store_event'
     __REQUEST_EMERGENCY_TOPIC = 'PGL/request/emergency'
 
-    def __init__(self, mqtt_host : str, mqtt_port : int = 1883):
+    def __init__(self, mqtt_host : str, mqtt_port : int = 1883) -> None:
         self.__mqtt_host = mqtt_host
         self.__mqtt_port = mqtt_port
         self.__mqtt_client = MqttClient()
@@ -42,7 +42,7 @@ class PGLServerAPI:
         self.__mqtt_client.loop_stop()
         self.__mqtt_client.disconnect()
 
-    def __worker(self):
+    def __worker(self) -> None:
         while not self.__stop_worker.is_set():
             try:
                 if self.__mqtt_client.is_connected():
