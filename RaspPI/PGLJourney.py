@@ -19,7 +19,7 @@ class PGLJourney:
 
 
     def enter_zone (self, zone : int) -> None:
-        self.latest_timestamp = self.get_timestamp()
+        self.latest_timestamp = self.__get_timestamp()
         if self.__zone_times[zone] is None:
             self.__zone_times[zone] = [self.latest_timestamp]
         else:
@@ -55,10 +55,10 @@ class PGLJourney:
         # Get timelimit for zone
         _, current_zone = self.__zone_times[-1]
         zone_time_limit_s = self.ZONE_TIME_LIMITS[current_zone]
-        zone_time_limit_ms = self.seconds_to_milliseconds(zone_time_limit_s)
+        zone_time_limit_ms = self.__seconds_to_milliseconds(zone_time_limit_s)
 
         # Validate if time limit have exceeded
-        current_time: int = self.get_timestamp()
+        current_time: int = self.__get_timestamp()
         time_passed: int = current_time - self.latest_timestamp
         time_exceeded : bool = time_passed > zone_time_limit_ms
 
@@ -68,13 +68,13 @@ class PGLJourney:
     
     # Not tested! https://flexiple.com/python/python-timestamp/
     # calender library might need to be implemented!
-    def get_timestamp (self) -> int:
+    def __get_timestamp (self) -> int:
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
         return time_stamp
     
     # NEED IMPLEMENTATION
-    def seconds_to_milliseconds(sec: int) -> int:
+    def __seconds_to_milliseconds(sec: int) -> int:
         return -1
     
 
