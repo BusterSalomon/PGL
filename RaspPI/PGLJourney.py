@@ -68,7 +68,7 @@ class PGLJourney:
     
     # Not tested! https://flexiple.com/python/python-timestamp/
     # calender library might need to be implemented!
-    def get_timestamp (self):
+    def get_timestamp (self) -> int:
         current_GMT = time.gmtime()
         time_stamp = calendar.timegm(current_GMT)
         return time_stamp
