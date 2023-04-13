@@ -1,5 +1,5 @@
 from PGLModel import PGLModel
-from PGLWebClient import PGLWebClient, PGLWebDeviceEvent
+# from PGLWebClient import PGLWebClient, PGLWebDeviceEvent
 from PGLZigbee2mqttClient import (PGLZigbee2mqttClient,
                                   PGLZigbee2mqttMessage, PGLZigbee2mqttMessageType)
 
@@ -96,23 +96,24 @@ class PGLController:
 
                 # Register event in the remote web server.
                 if journey.complete:  # maybe stop timing thread here
-                    PGLWebDeviceEvent()
-                    client = PGLWebClient(self.HTTP_HOST)
-                    try:
-                        client.send_event(web_event.to_json())
-                    except ConnectionError as ex:
-                        print(f"{ex}")
+                    pass
+                    # PGLWebDeviceEvent()
+                    # client = PGLWebClient(self.HTTP_HOST)
+                    # try:
+                    #     # client.send_event(web_event.to_json())
+                    # except ConnectionError as ex:
+                    #     print(f"{ex}")
 
                 # Legacy:
-                web_event = PGLWebDeviceEvent(device_id=device.id_,
-                                              device_type=device.type_,
-                                              measurement=occupancy)
+                # web_event = PGLWebDeviceEvent(device_id=device.id_,
+                #                               device_type=device.type_,
+                #                               measurement=occupancy)
 
-                client = PGLWebClient(self.HTTP_HOST)
-                try:
-                    client.send_event(web_event.to_json())
-                except ConnectionError as ex:
-                    print(f"{ex}")
+                # client = PGLWebClient(self.HTTP_HOST)
+                # try:
+                #     client.send_event(web_event.to_json())
+                # except ConnectionError as ex:
+                #     print(f"{ex}")
                 #   -----------------------  #
 
         if device.type_ == "vs":
