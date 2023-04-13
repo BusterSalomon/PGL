@@ -8,9 +8,9 @@ from threading import Event, Thread
 class PGLJourney:
 
     def __init__(self, last_zone):
-        self.zone_times = {} # {zone: [times]}
-        self.milestones = {'complete': False, 'bathroom': False}
-        self.last_zone = last_zone
+        self.__zone_times = {} # {zone: [times]}
+        self.__milestones = {'complete': False, 'bathroom': False}
+        self.__last_zone = last_zone
 
 
         # Threading
@@ -20,40 +20,40 @@ class PGLJourney:
 
     def enter_zone (self, zone):
         self.latest_timestamp = self.get_timestamp()
-        if self.zone_times[zone] is None:
-            self.zone_times[zone] = [self.latest_timestamp]
+        if self.__zone_times[zone] is None:
+            self.__zone_times[zone] = [self.latest_timestamp]
         else:
-            self.zone_times[zone].append(self.latest_timestamp)
+            self.__zone_times[zone].append(self.latest_timestamp)
 
         # Validate roundtrip
         # If not the first entrance (start) and the zone added is zero
-        if (len(self.zone_times) != 1 and zone == 0): # to do: logic for if bathroom has been visited
-            self.milestones['complete'] = True 
-            if self.last_zone in self.zone_times:
-                self.milestones['bathroom'] = True
+        if (len(self.__zone_times) != 1 and zone == 0): # to do: logic for if bathroom has been visited
+            self.__milestones['complete'] = True 
+            if self.__last_zone in self.__zone_times:
+                self.__milestones['bathroom'] = True
     
     def get_journey_to_string (self) -> str:
-        journey_time = self.zone_times[0][-1] - self.zone_times[0][0]
-        if self.milestones['bathroom'] == True:
-            bathroom_start = self.zone_times[self.last_zone][0]
-            for time in self.zone_times[self.last_zone - 1]:
+        journey_time = self.__zone_times[0][-1] - self.__zone_times[0][0]
+        if self.__milestones['bathroom'] == True:
+            bathroom_start = self.__zone_times[self.__last_zone][0]
+            for time in self.__zone_times[self.__last_zone - 1]:
                 if time > bathroom_start:
                     bathroom_end = time
                     break
             bathroom_time = bathroom_end - bathroom_start
         else:
             bathroom_time = 'N/A'
-        journey_string = f"{self.zone_times[0][0]}; {journey_time}; {bathroom_time};"
+        journey_string = f"{self.__zone_times[0][0]}; {journey_time}; {bathroom_time};"
         return journey_string 
 
              
 
-    def get_milestones (self) -> bool:
-        return self.milestones
+    def get___milestones (self) -> bool:
+        return self.__milestones
     
     def timing_worker (self) -> None:
         # Get timelimit for zone
-        _, current_zone = self.zone_times[-1]
+        _, current_zone = self.__zone_times[-1]
         zone_time_limit_s = self.ZONE_TIME_LIMITS[current_zone]
         zone_time_limit_ms = self.seconds_to_milliseconds(zone_time_limit_s)
 
