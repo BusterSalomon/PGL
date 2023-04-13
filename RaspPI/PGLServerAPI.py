@@ -32,6 +32,7 @@ class PGLServerAPI:
 
     def __on_connect(self, client, userdata, flags, rc) -> None:
         print("ServerAPI client connected")
+        self.__worker_thread.start()
 
     def add_event_to_queue(self, payload : str, type : str) -> None:
         new_event = Event_(payload, type)
