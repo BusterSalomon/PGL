@@ -43,7 +43,7 @@ class PGLJourney:
             bathroom_time = bathroom_end - bathroom_start
         else:
             bathroom_time = 'N/A'
-        journey_string = f"{self.__zone_times[0][0]}; {journey_time}; {bathroom_time};"         #we should also add the RASPPI id here (last one)
+        journey_string = f"{self.__zone_times[0][0]}; {journey_time}; {bathroom_time};"         #we should also add the RASPPI id here (last one) perhaps (socket.gethostname())
         return journey_string 
 
              
