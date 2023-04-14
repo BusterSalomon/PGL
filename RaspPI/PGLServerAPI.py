@@ -4,6 +4,15 @@ from queue import Empty, Queue
 from dataclasses import dataclass
 from time import sleep
 
+# IMPORTANT: We need to configure the MQTT broker to bridge the information from the RaspPI to the server
+# Only the shared information should be sent to the server, not the local information
+# these are the topics that should be bridged:
+    # PGL/request/store_event
+    # PGL/request/emergency
+# The bridging should be done in the MQTT broker, not in the code
+# Perhaps this link will be useful: http://www.steves-internet-guide.com/mosquitto-bridge-configuration/
+
+
 @dataclass
 class Event_:
         type : str
