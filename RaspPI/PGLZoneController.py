@@ -22,10 +22,8 @@ class PGLZoneController:
         if occupancy:
             zone = self.zones[device_id]
             if self.current_zone == None and zone == 0: # if the user enters the first zone
-                self.current_zone = zone
                 self.journey.enter_zone(zone) # to do
-            elif zone + 1 == self.current_zone or zone - 1 == self.current_zone: # if the user enters the next zone
-                self.current_zone = zone
+            elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
                 self.journey.enter_zone(zone)
                 if zone < self.current_zone: # if the user enters the previous zone
                     self.direction = "backwards"
@@ -33,6 +31,7 @@ class PGLZoneController:
                     self.direction = "forwards" # if the user enters the next zone
             else:
                 pass # what happens if the user skips a zone?
+            self.current_zone = zone
         # lights is a tuple of the current zone and the next zone, depending on the direction
         lights = (self.current_zone, 
                   self.current_zone + 1 if self.direction == "forwards" else self.current_zone - 1) 

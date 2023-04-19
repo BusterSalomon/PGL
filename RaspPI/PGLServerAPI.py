@@ -61,7 +61,6 @@ class PGLServerAPI:
 
             else:
                 try:
-                    print(f'ServerAPI worker: got event {incoming_event.type} \n')
                     if incoming_event.type == self.__EMERGENCY_TYPE:
                         self.__mqtt_client.publish(self.__REQUEST_EMERGENCY_TOPIC, incoming_event.payload)
                         print("published emergency")
