@@ -49,7 +49,6 @@ class PGLServerAPI:
     def __worker(self) -> None:
         print("ServerAPI worker started \n")
         while not self.__stop_worker.is_set():
-            print("ServerAPI worker: waiting for event \n")
             try:
                 if self.__mqtt_client.is_connected():
                     incoming_event : Event_ = self.__events_queue.get(timeout=1)

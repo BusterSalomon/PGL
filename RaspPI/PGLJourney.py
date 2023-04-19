@@ -2,6 +2,7 @@
 import datetime
 from threading import Event, Thread
 import socket
+from time import sleep
 
 
 class PGLJourney:
@@ -14,8 +15,10 @@ class PGLJourney:
         self.server_api_callback = server_api_callback        
 
         # Threading
-        # self.__timer_thread = Thread(target=self.timing_worker, daemon=True)
-        # self.__timer_thread.start()
+        self.stop_worker = Event()
+        self.__time_limit : datetime.timedelta = datetime.timedelta(seconds=15)
+        self.__timer_thread = Thread(target=self.timing_worker, daemon=True)
+        self.__timer_thread.start()
 
 
     def enter_zone (self, zone : int) -> None:
@@ -55,31 +58,20 @@ class PGLJourney:
     def is_journey_complete (self) -> bool:
         return self.__milestones['complete'] and self.__milestones['bathroom']
     
-    def timing_worker (self, time_limit) -> None:
+    def timing_worker (self) -> None:
+        while not self.stop_worker.is_set():
+            time_passed : datetime = datetime.timedelta(0)
+            # evaluate if time limit have exceeded if user is in the last zone
+            if (self.__last_zone == self.__current_zone):
+                current_time: int = datetime.datetime.now()
+                print(f"current time: {current_time}")
+                if (self.__last_zone in self.__zone_times):
+                    time_passed = current_time - self.__zone_times[self.__last_zone][0]
+                else:
+                    break
 
-        # evaluate if time limit have exceeded if user is in the last zone
-        if (self.__last_zone == self.__current_zone):
-            current_time: int = datetime.datetime.now()
-            time_passed: int = current_time - self.__zone_times[self.__last_zone][0]
-
-        # If time limit have exceeded, call callback
-        if (time_passed > time_limit):
-            self.server_api_callback(self.get_journey_to_string(), "emergency")
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            print(f"time passed: {time_passed}")
+            # If time limit have exceeded, call callback
+            if (time_passed > self.__time_limit):
+                self.server_api_callback(self.get_journey_to_string(), "emergency")
+            sleep(1)
