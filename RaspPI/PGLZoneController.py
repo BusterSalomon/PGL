@@ -12,10 +12,10 @@ class PGLZoneController:
             if device.type_ == "pir":
                 self.zones[device.id_] = i
         self.zone_count = len(self.zones)
-        self.journey = PGLJourney(self.zone_count - 1) # the last zone is the bathroom zone, needed in journey class 
-                                                       # to know when bathroom is visited.
         self.direction = "forward"
         self.server_api = PGLServerAPI("localhost")
+        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
+                                                       # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
 
 
     def control_zones(self, occupancy, device_id):
@@ -39,13 +39,13 @@ class PGLZoneController:
         
         if self.journey.is_journey_complete():
             journey_str = self.journey.get_journey_to_string()
-            self.server_api.post_journey(journey_str)
-            self.journey = PGLJourney(self.zone_count - 1)
+            self.server_api.add_event_to_queue(journey_str, "journey")
+            self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
             self.current_zone = None
             self.direction = "forwards"
-            return self.journey.get_zones(), lights
+            return (self.journey.get_journey_to_string(), lights)
         
-        return self.journey.get_zones(), lights
+        return self.journey.get_journey_to_string(), lights
     
     
     

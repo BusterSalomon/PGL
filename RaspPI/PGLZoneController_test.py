@@ -1,6 +1,7 @@
 from PGLZoneController import PGLZoneController
 from PGLModel import PGLModel, PGLZigbeeDevice
-from PGLJourney import Journey
+from PGLJourney import PGLJourney
+from time import sleep
 
 devices_model = PGLModel()
 devices_model.add([PGLZigbeeDevice("PIR1_Pigeon", "pir"),
@@ -13,16 +14,21 @@ zone_controller = PGLZoneController(devices_model.devices_list)
 journey, lights = zone_controller.control_zones(True, "PIR1_Pigeon")
 print(journey)
 print(lights)
+sleep(0.5)
 journey, lights = zone_controller.control_zones(True, "PIR2_Pigeon")
 print(journey)
 print(lights)
+sleep(0.5)
 journey, lights = zone_controller.control_zones(True, "PIR3_Pigeon")
 print(journey)
 print(lights)
+sleep(0.5)
 journey, lights = zone_controller.control_zones(True, "PIR2_Pigeon")
 print(journey)
 print(lights)
+sleep(0.5)
 journey, lights = zone_controller.control_zones(True, "PIR1_Pigeon")
 print(journey)
 print(lights)
+sleep(5)
 
