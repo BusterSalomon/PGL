@@ -13,7 +13,7 @@ class PGLZoneController:
                 self.zones[device.id_] = i
         self.zone_count = len(self.zones)
         self.direction = "forward"
-        self.server_api = PGLServerAPI("localhost")
+        self.server_api = PGLServerAPI("test.mosquitto.org")
         self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
                                                        # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
 
