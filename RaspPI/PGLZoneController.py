@@ -1,5 +1,6 @@
 # initialize timer object
-from PGLJourney import Journey
+from PGLJourney import PGLJourney
+from PGLServerAPI import PGLServerAPI
 
 class PGLZoneController:
     
@@ -11,42 +12,40 @@ class PGLZoneController:
             if device.type_ == "pir":
                 self.zones[device.id_] = i
         self.zone_count = len(self.zones)
-        self.journey = Journey(self.zones)
         self.direction = "forward"
+        self.server_api = PGLServerAPI("localhost")
+        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
+                                                       # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
+
 
     def control_zones(self, occupancy, device_id):
         if occupancy:
             zone = self.zones[device_id]
             if self.current_zone == None and zone == 0: # if the user enters the first zone
-                self.current_zone = zone
-                self.journey.enter_zone(zone)
-            elif zone + 1 == self.current_zone or zone - 1 == self.current_zone: # if the user enters the next zone
-                self.current_zone = zone
+                self.journey.enter_zone(zone) # to do
+            elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
                 self.journey.enter_zone(zone)
                 if zone < self.current_zone: # if the user enters the previous zone
-                    self.direction = "backward"
+                    self.direction = "backwards"
                 else:
-                    self.direction = "forward" # if the user enters the next zone
+                    self.direction = "forwards" # if the user enters the next zone
             else:
                 pass # what happens if the user skips a zone?
+            self.current_zone = zone
         # lights is a tuple of the current zone and the next zone, depending on the direction
         lights = (self.current_zone, 
-                  self.current_zone + 1 if self.direction == "forward" else self.current_zone - 1) 
-        return self.journey.get_zones(), lights
-
+                  self.current_zone + 1 if self.direction == "forwards" else self.current_zone - 1) 
         
-
-            
-                
-                
-
-           
-                
-
-                    
-                
-
-
-
-
-# controlZones method takes message data (json) and sensor ID
+        if self.journey.is_journey_complete():
+            journey_str = self.journey.get_journey_to_string()
+            self.server_api.add_event_to_queue(journey_str, "journey")
+            self.journey.stop_worker.set()
+            self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
+            self.current_zone = None
+            self.direction = "forwards"
+            return (self.journey.get_journey_to_string(), lights)
+        
+        return self.journey.get_journey_to_string(), lights
+    
+    
+    
