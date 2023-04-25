@@ -1,5 +1,5 @@
 # initialize timer object
-from PGLJourney import Journey
+from PGLJourney import PGLJourney
 
 class PGLZoneController:
     
@@ -35,18 +35,19 @@ class PGLZoneController:
         return self.journey.get_zones(), lights
 
         
-
-            
-                
-                
-
-           
-                
-
-                    
-                
-
-
-
-
-# controlZones method takes message data (json) and sensor ID
+        if self.journey.is_journey_complete():
+            return self.reset_and_send_journey(), lights
+        
+        return self.journey.get_journey_to_string(), lights
+    
+    def reset_and_send_journey(self) -> str:
+        journey_str = self.journey.get_journey_to_string()
+        self.server_api.add_event_to_queue(journey_str, "journey")
+        self.journey.stop_worker.set()
+        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
+        self.current_zone = None
+        self.direction = "forwards"
+        return journey_str
+    
+    
+    
