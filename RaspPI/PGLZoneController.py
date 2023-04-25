@@ -8,7 +8,7 @@ class PGLZoneController:
         self.devices = devices
         self.zones = {}
         self.current_zone = None
-        for i, device in enumerate(devices):
+        for i, device in enumerate(devices.sensors_list):
             if device.type_ == "pir":
                 self.zones[device.id_] = i
         self.zone_count = len(self.zones)

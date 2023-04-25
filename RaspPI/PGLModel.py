@@ -31,7 +31,7 @@ class PGLModel:
 
     @property
     def actuators_list(self) -> List[PGLZigbeeDevice]:
-        return list(filter(lambda s: s.type_ in {"led", "power plug"},
+        return list(filter(lambda s: s.type_ in {"led"},
                            self.__devices.values()))
 
     @property

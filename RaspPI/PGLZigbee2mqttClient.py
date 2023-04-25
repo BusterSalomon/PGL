@@ -174,6 +174,16 @@ class PGLZigbee2mqttClient:
 
         self.__client.publish(topic=f"zigbee2mqtt/{device_id}/set",
                               payload=json.dumps({"state": f"{state}"}))
+    
+    # Light up the zones
+    def change_light_zones_states (self, device_ids, states) -> None:
+        # Check if client is connected
+        if not self.__connected:
+            raise RuntimeError("The client is not connected. Connect first.")
+        # If connected, then light up
+        else:
+            for index, device_id in enumerate(device_ids):
+                self.change_state(device_id, states[index])
 
     def check_health(self) -> str:
         """ Allows to check whether zigbee2mqtt is healthy, i.e. the service is running properly.
