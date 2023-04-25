@@ -20,7 +20,6 @@ devices_model.add([PGLZigbeeDevice("PIR1_Pigeon", "pir"),
                     PGLZigbeeDevice("LED5_Pigeon", "led"),])
 
 zone_controller = PGLZoneController(5, devices_model)
-
 # TEST CASE 1: Test journey complete
 
 lights = zone_controller.control_zones(True, "PIR1_Pigeon")
