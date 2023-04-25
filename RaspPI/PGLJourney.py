@@ -73,6 +73,6 @@ class PGLJourney:
             # print(f"time passed in bathroom: {time_passed}")
             # If time limit have exceeded, call callback
             if (time_passed > self.__time_limit):
-                tmp_string = str(datetime.datetime.now()) + "; " + str(time_passed) + "; " + socket.gethostname() + "; "
-                self.server_api_callback(self.get_journey_to_string(), "emergency")
-            sleep(1)
+                tmp_string = str(datetime.datetime.now()) + ";" + str(time_passed) + ";" + socket.gethostname() + ";"
+                self.server_api_callback(tmp_string, "emergency")
+            sleep(5)
