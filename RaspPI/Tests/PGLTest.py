@@ -28,12 +28,20 @@ def test_led_map ():
     
     zone_controller = PGLZoneController(3, devices_model)
 
+    print("led_states ok?")
+    
+    # case 1
     zone_controller.set_device_led_states((1, 4))
     led_states = zone_controller.led_states
-    print(led_states)
+    led_states_test = {'LED1_Pigeon': 'ON', 'LED2_Pigeon': 'OFF', 'LED3_Pigeon': 'OFF', 'LED4_Pigeon': 'ON', 'LED5_Pigeon': 'OFF'}
+    print(led_states == led_states_test)
+
+    # case 2
     zone_controller.set_device_led_states((2, 3))
     led_states = zone_controller.led_states
-    print(led_states)
+    led_states_test = {'LED1_Pigeon': 'OFF', 'LED2_Pigeon': 'ON', 'LED3_Pigeon': 'ON', 'LED4_Pigeon': 'OFF', 'LED5_Pigeon': 'OFF'}
+    print(led_states == led_states_test)
+
 
     
 def test_all_devices ():
