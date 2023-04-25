@@ -90,45 +90,49 @@ class PGLZoneController:
     # Inputs: Takes occupancy and device_id related
     # Output: Returns the light led_states dictionary
     def control_zones(self, occupancy, device_id) -> dict[str, str]:
-        # If there is registered occupancy
-        if occupancy:
-            zone = self.get_zone_from_device_id(device_id)
-            if self.current_zone == None and zone == 1: # if the user enters the first zone
-                self.journey.enter_zone(zone)
+        try:
+            # If there is registered occupancy
+            if occupancy:
+                zone = self.get_zone_from_device_id(device_id)
+                if self.current_zone == None and zone == 1: # if the user enters the first zone
+                    self.journey.enter_zone(zone)
 
-            elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
-                self.journey.enter_zone(zone)
-                if zone < self.current_zone: # if the user enters the previous zone
-                    self.direction = "backwards"
+                elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
+                    self.journey.enter_zone(zone)
+                    if zone < self.current_zone: # if the user enters the previous zone
+                        self.direction = "backwards"
+                    else:
+                        self.direction = "forwards" # if the user enters the next zone
+                
                 else:
-                    self.direction = "forwards" # if the user enters the next zone
-            
+                    pass # what happens if the user skips a zone?
+                self.current_zone = zone
+            # lights is a tuple of the current zone and the next zone, depending on the direction
+            if self.direction == "forwards" and self.current_zone+1 <= self.zone_count:
+                zones_to_light_up = (self.current_zone, self.current_zone + 1)
+            elif self.direction == "backwards" and self.current_zone-1>0:
+                zones_to_light_up = (self.current_zone, self.current_zone - 1)
             else:
-                pass # what happens if the user skips a zone?
-            self.current_zone = zone
-        # lights is a tuple of the current zone and the next zone, depending on the direction
-        if self.direction == "forwards" and self.current_zone+1 <= self.zone_count:
-            zones_to_light_up = (self.current_zone, self.current_zone + 1)
-        elif self.direction == "backwards" and self.current_zone-1>0:
-            zones_to_light_up = (self.current_zone, self.current_zone - 1)
-        else:
-            zones_to_light_up = (self.current_zone, self.current_zone)
-        
-        # Update led state dictionary
-        self.set_device_led_states(zones_to_light_up)
-        
-        
-        if self.journey.is_journey_complete():
-            print("Journey is complete")
-            journey_str = self.journey.get_journey_to_string()
-            self.server_api.add_event_to_queue(journey_str, "journey")
-            self.journey.stop_worker.set()
-            self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
-            self.current_zone = None
-            self.direction = "forwards"
+                zones_to_light_up = (self.current_zone, self.current_zone)
+            
+            # Update led state dictionary
+            self.set_device_led_states(zones_to_light_up)
+            
+            
+            if self.journey.is_journey_complete():
+                print("Journey is complete")
+                journey_str = self.journey.get_journey_to_string()
+                self.server_api.add_event_to_queue(journey_str, "journey")
+                self.journey.stop_worker.set()
+                self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
+                self.current_zone = None
+                self.direction = "forwards"
+                return self.led_states
+            
             return self.led_states
-        
-        return self.led_states
+        except KeyError:
+            print(f'Error in control_zones: {KeyError}')
+
     
     
     
