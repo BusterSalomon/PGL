@@ -10,7 +10,7 @@ devices_model.add([PGLZigbeeDevice("PIR1_Pigeon", "pir"),
                     PGLZigbeeDevice("LED1_Pigeon", "led"),
                     PGLZigbeeDevice("LED2_Pigeon", "led"),
                     PGLZigbeeDevice("LED3_Pigeon", "led")])
-zone_controller = PGLZoneController(devices_model.devices_list)
+zone_controller = PGLZoneController(3, devices_model)
 journey, lights = zone_controller.control_zones(True, "PIR1_Pigeon")
 print(journey)
 print(lights)

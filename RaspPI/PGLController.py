@@ -31,7 +31,7 @@ class PGLController:
                                                  on_message_clbk=self.__zigbee2mqtt_event_received)
 
         # initialize zone controller object and tim
-        self.__zone_controller = PGLZoneController(devices_model)
+        self.__zone_controller = PGLZoneController(self.__devices_model)
 
     def start(self) -> None:
         """ Start listening for zigbee2mqtt events.
@@ -45,26 +45,6 @@ class PGLController:
         """
         self.__z2m_client.disconnect()
 
-    
-    # Return device ids from 
-    def getDeviceIdsFromIndexes (self, indexes) -> str:
-        device_ids = []
-        for index in indexes:
-            for i, e in enumerate(self.__devices_model.actuators_list):
-                if (i == index):
-                    device_ids.append(e)
-
-        
-    
-    # Generete states list of the form ["ON"/"OFF",..., "ON"/"OFF"]
-    def getStatesFromIndexes (self, indexes):
-        states = []
-        light1, light2 = indexes
-        for i, e in enumerate(self.__devices_model.actuators_list):
-            if (i == light1 or i == light2):
-                states[i] = 'ON'
-            else:
-                states[i] = 'OFF'
 
     def __zigbee2mqtt_event_received(self, message: PGLZigbee2mqttMessage) -> None:
         """ Process an event received from zigbee2mqtt. This function given as callback to
@@ -111,12 +91,11 @@ class PGLController:
                 journey, lights = self.__zone_controller.control_zones(
                     message.event["occupancy"], device.id_)
 
-                # Get device id's from device index
-                device_ids = self.getDeviceIdsFromIndexes(lights)
-                states = self.getStatesFromIndexes(lights)
+                # Get device id's from zone id's
+                device_ids = self.__zone_controller.get_device_ids_from_zone_ids(list(lights), ["led", "led"])
 
                 # Light up zones, and light down old zones
-                self.__z2m_client.change_light_zones_states (device_ids, states)
+                self.__z2m_client.change_light_zones_states (device_ids, self.__devices_model.actuators_list)
 
                 # Change the state on all actuators, i.e. LEDs and power plugs (NOTE: should be based on 'lights')
                 # for i, a in enumerate(self.__devices_model.actuators_list):

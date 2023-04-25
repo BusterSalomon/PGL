@@ -8,6 +8,7 @@ from time import sleep
 from typing import Any, Callable, List, Optional
 from paho.mqtt.client import Client as MqttClient, MQTTMessage
 from paho.mqtt import publish, subscribe
+from PGLModel import PGLModel
 
 
 class PGLZigbee2mqttMessageType(Enum):
@@ -176,14 +177,16 @@ class PGLZigbee2mqttClient:
                               payload=json.dumps({"state": f"{state}"}))
     
     # Light up the zones
-    def change_light_zones_states (self, device_ids, states) -> None:
+    def change_light_zones_states (self, actuators_to_turn_off: list[str], all_actuators: list[PGLModel]) -> None:
         # Check if client is connected
         if not self.__connected:
             raise RuntimeError("The client is not connected. Connect first.")
         # If connected, then light up
         else:
-            for index, device_id in enumerate(device_ids):
-                self.change_state(device_id, states[index])
+            for i, device in enumerate(all_actuators):
+                for j, device_id in enumerate(actuators_to_turn_off):
+                   None
+               
 
     def check_health(self) -> str:
         """ Allows to check whether zigbee2mqtt is healthy, i.e. the service is running properly.

@@ -64,13 +64,13 @@ class PGLJourney:
             # evaluate if time limit have exceeded if user is in the last zone
             if (self.__last_zone == self.__current_zone):
                 current_time: int = datetime.datetime.now()
-                print(f"current time: {current_time}")
+                # print(f"current time: {current_time}")
                 if (self.__last_zone in self.__zone_times):
                     time_passed = current_time - self.__zone_times[self.__last_zone][0]
                 else:
                     break
 
-            print(f"time passed in bathroom: {time_passed}")
+            # print(f"time passed in bathroom: {time_passed}")
             # If time limit have exceeded, call callback
             if (time_passed > self.__time_limit):
                 tmp_string = str(datetime.datetime.now()) + "; " + str(time_passed) + "; " + socket.gethostname() + "; "
