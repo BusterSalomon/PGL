@@ -49,24 +49,24 @@ class PGLServerAPI:
     def __worker(self) -> None:
         print("ServerAPI worker started \n")
         while not self.__stop_worker.is_set():
+            incoming_event : Event_ = None
             try:
                 if self.__mqtt_client.is_connected():
-                    incoming_event : Event_ = self.__events_queue.get(timeout=1)
+                    incoming_event = self.__events_queue.get(timeout=1)
                 else:
                     sleep(0.02)
 
             except Empty:
-                print('ServerAPI worker: queue is empty')
                 pass
 
             else:
                 try:
                     if incoming_event.type == self.__EMERGENCY_TYPE:
                         self.__mqtt_client.publish(self.__REQUEST_EMERGENCY_TOPIC, incoming_event.payload)
-                        print("published emergency")
+                        print("ServerAPI: Published emergency")
                     elif incoming_event.type == self.__JOURNEY_TYPE:
                         self.__mqtt_client.publish(self.__REQUEST_STORE_EVENT_IN_DB_TOPIC, incoming_event.payload)
-                        print("published journey")
+                        print("ServerAPI: Published journey")
 
                 except KeyError:
                     print(f'Error occured in API_worker: {KeyError}')

@@ -177,15 +177,16 @@ class PGLZigbee2mqttClient:
                               payload=json.dumps({"state": f"{state}"}))
     
     # Light up the zones
-    def change_light_zones_states (self, actuators_to_turn_off: list[str], all_actuators: list[PGLModel]) -> None:
+    def change_light_zones_states (self, led_state_map: dict[str, str])-> None:
         # Check if client is connected
         if not self.__connected:
             raise RuntimeError("The client is not connected. Connect first.")
+        
         # If connected, then light up
         else:
-            for i, device in enumerate(all_actuators):
-                for j, device_id in enumerate(actuators_to_turn_off):
-                   None
+            for _, led_device_id in enumerate(led_state_map):
+                    led_state: str = led_state_map.get(led_device_id)
+                    self.change_state(led_device_id, led_state)                
                
 
     def check_health(self) -> str:

@@ -9,7 +9,32 @@ from PGLModel import PGLModel, PGLZigbeeDevice
 def main ():
     # test_all_devices()
     # test_some_devices()
-    test_light_functions()
+    # test_light_functions()
+    test_led_map ()
+
+def test_led_map ():
+    #Instantiate model
+    devices_model = PGLModel()
+    devices_model.add([PGLZigbeeDevice("PIR1_Pigeon", "pir"),
+                       PGLZigbeeDevice("PIR2_Pigeon", "pir"),
+                       PGLZigbeeDevice("PIR3_Pigeon", "pir"),
+                       PGLZigbeeDevice("PIR4_Pigeon", "pir"),
+                       PGLZigbeeDevice("PIR5_Pigeon", "pir"),
+                       PGLZigbeeDevice("LED1_Pigeon", "led"),
+                       PGLZigbeeDevice("LED2_Pigeon", "led"),
+                       PGLZigbeeDevice("LED3_Pigeon", "led"),
+                       PGLZigbeeDevice("LED4_Pigeon", "led"),
+                       PGLZigbeeDevice("LED5_Pigeon", "led"),])
+    
+    zone_controller = PGLZoneController(3, devices_model)
+
+    zone_controller.set_device_led_states((1, 4))
+    led_states = zone_controller.led_states
+    print(led_states)
+    zone_controller.set_device_led_states((2, 3))
+    led_states = zone_controller.led_states
+    print(led_states)
+
     
 def test_all_devices ():
     #Instantiate model

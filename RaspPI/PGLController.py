@@ -8,7 +8,6 @@ from PGLZoneController import PGLZoneController
 
 
 class PGLController:
-    HTTP_HOST = "http://localhost:8000"
     MQTT_BROKER_HOST = "localhost"
     MQTT_BROKER_PORT = 1883
 
@@ -77,9 +76,11 @@ class PGLController:
         # If the device ID is known, then process the device event and send a message to the remote
         # web server.
         device = self.__devices_model.find(device_id)
-
+        
+        # If the type of the event is a motion sensor
         if device.type_ == "pir":
             # reset alarm timer in its own thread, when journey complete stop timer.
+            occupancy: bool
             try:
                 occupancy = message.event["occupancy"]
 
@@ -88,41 +89,8 @@ class PGLController:
             else:
                 # Pass data and topic to the zone controller which returns (optional) a journey object and lights to be turned on
                 # journey is a dict with the zones and corresponding time interval tuples.
-                journey, lights = self.__zone_controller.control_zones(
-                    message.event["occupancy"], device.id_)
-
-                # Get device id's from zone id's
-                device_ids = self.__zone_controller.get_device_ids_from_zone_ids(list(lights), ["led", "led"])
+                led_state_map = self.__zone_controller.control_zones(
+                                occupancy, device.id_)
 
                 # Light up zones, and light down old zones
-                self.__z2m_client.change_light_zones_states (device_ids, self.__devices_model.actuators_list)
-
-                # Change the state on all actuators, i.e. LEDs and power plugs (NOTE: should be based on 'lights')
-                # for i, a in enumerate(self.__devices_model.actuators_list):
-                #     self.__z2m_client.change_state(a.id_, lights[i])
-
-                # Register event in the remote web server.
-                if journey.complete:  # maybe stop timing thread here
-                    pass
-                    # PGLWebDeviceEvent()
-                    # client = PGLWebClient(self.HTTP_HOST)
-                    # try:
-                    #     # client.send_event(web_event.to_json())
-                    # except ConnectionError as ex:
-                    #     print(f"{ex}")
-
-                # Legacy:
-                # web_event = PGLWebDeviceEvent(device_id=device.id_,
-                #                               device_type=device.type_,
-                #                               measurement=occupancy)
-
-                # client = PGLWebClient(self.HTTP_HOST)
-                # try:
-                #     client.send_event(web_event.to_json())
-                # except ConnectionError as ex:
-                #     print(f"{ex}")
-                #   -----------------------  #
-
-        if device.type_ == "vs":
-            pass
-            # if we want to detect the door opening as well.
+                self.__z2m_client.change_light_zones_states (led_state_map)

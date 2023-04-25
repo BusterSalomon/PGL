@@ -32,7 +32,7 @@ class PGLJourney:
 
         # Validate roundtrip
         # If not the first entrance (start) and the zone added is zero
-        if (len(self.__zone_times) != 1 and zone == 0): 
+        if (len(self.__zone_times) != 1 and zone == 1): 
             self.__milestones['complete'] = True 
             if self.__last_zone in self.__zone_times: # If the last zone is in the zone_times
                 self.__milestones['bathroom'] = True
@@ -41,7 +41,7 @@ class PGLJourney:
         if self.__zone_times == {}: # If the journey is empty
             return "No journey"
         bathroom_time = None
-        journey_time = self.__zone_times[0][-1] - self.__zone_times[0][0]
+        journey_time = self.__zone_times[1][-1] - self.__zone_times[1][0]
         if self.__milestones['bathroom'] == True:
             bathroom_start = self.__zone_times[self.__last_zone][0]
             bathroom_end = None
@@ -52,7 +52,7 @@ class PGLJourney:
             bathroom_time = bathroom_end - bathroom_start
         else:
             bathroom_time = 'N/A'
-        journey_string = f"{self.__zone_times[0][0]}; {journey_time}; {bathroom_time}; {socket.gethostname()}; "    #we should also add the RASPPI id here (last one) perhaps (socket.gethostname())
+        journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time}; {socket.gethostname()}; "    #we should also add the RASPPI id here (last one) perhaps (socket.gethostname())
         return journey_string 
 
     def is_journey_complete (self) -> bool:
