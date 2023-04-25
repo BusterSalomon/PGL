@@ -50,8 +50,6 @@ lights = zone_controller.control_zones(True, "PIR1_Pigeon")
 print(lights)
 sleep(1)
 
-print("Journey complete: ")
-print(zone_controller.TEST_is_journey_complete())
 sleep(10)
 
 

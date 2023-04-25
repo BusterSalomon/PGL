@@ -25,7 +25,7 @@ class PGLZoneController:
         self.zone_count = len(self.zones_devices_map)
         self.direction = "forwards"
         self.server_api = PGLServerAPI("test.mosquitto.org")
-        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
+        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
                                                        # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
 
     # Add device to {zone: device} map
@@ -86,9 +86,6 @@ class PGLZoneController:
             else:
                 self.led_states[cur_led_id] = "OFF"
     
-    def TEST_is_journey_complete (self):
-        return self.journey.is_journey_complete()
-
     # Main control
     # Inputs: Takes occupancy and device_id related
     # Output: Returns the light led_states dictionary
@@ -122,6 +119,7 @@ class PGLZoneController:
         
         
         if self.journey.is_journey_complete():
+            print("Journey is complete")
             journey_str = self.journey.get_journey_to_string()
             self.server_api.add_event_to_queue(journey_str, "journey")
             self.journey.stop_worker.set()
