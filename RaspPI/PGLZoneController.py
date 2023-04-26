@@ -8,11 +8,11 @@ class PGLZoneController:
     def __init__(self, num_zones: int, devices_model: PGLModel = None):
         # Initialise attributes
         self.zones_devices_map: dict[int, dict[str, str]] = {}
-        self.current_zone: int = None
         self.led_states: dict[str, str] = {} # {device_id, state}
+        self.current_zone: int = None
 
         # If a devices model is given, then bind devices to zone in increasing order
-        # And initialise ledstates to off
+        # And initialise led states to off
         if devices_model:
             # Bind devices to zones
             for index, device in enumerate(devices_model.sensors_list):
@@ -25,14 +25,15 @@ class PGLZoneController:
         self.zone_count = len(self.zones_devices_map)
         self.direction = "forwards"
         self.server_api = PGLServerAPI("test.mosquitto.org")
-        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue) # the last zone is the bathroom zone, needed in journey class 
-                                                       # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
+        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue) 
+        # the last zone is the bathroom zone, needed in journey class 
+        # to know when bathroom is visited. We want the timer thread to be able to add event to the queue
 
     # Add device to {zone: device} map
     def bind_device_to_zone (self, zone_id: int, device: PGLZigbeeDevice) -> None:
         # zone_n: {"pir" : device_id,
         #          "led" : device id }
-        if self.zones_devices_map.get(zone_id):
+        if self.zones_devices_map[zone_id]:
             self.zones_devices_map[zone_id][device.type_] = device.id_
         else:
             self.zones_devices_map[zone_id] = {device.type_: device.id_}
@@ -89,49 +90,55 @@ class PGLZoneController:
     # Main control
     # Inputs: Takes occupancy and device_id related
     # Output: Returns the light led_states dictionary
-    def control_zones(self, occupancy, device_id) -> dict[str, str]:
+    def control_zones(self, device_id) -> dict[str, str]:
         try:
-            # If there is registered occupancy
-            if occupancy:
-                zone = self.get_zone_from_device_id(device_id)
-                if self.current_zone == None and zone == 1: # if the user enters the first zone
-                    self.journey.enter_zone(zone)
-
-                elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
-                    self.journey.enter_zone(zone)
-                    if zone < self.current_zone: # if the user enters the previous zone
-                        self.direction = "backwards"
-                    else:
-                        self.direction = "forwards" # if the user enters the next zone
-                
-                else:
-                    pass # what happens if the user skips a zone?
-                self.current_zone = zone
+            self.__update_journey_zone(self.get_zone_from_device_id(device_id))
             # lights is a tuple of the current zone and the next zone, depending on the direction
-            if self.direction == "forwards" and self.current_zone+1 <= self.zone_count:
-                zones_to_light_up = (self.current_zone, self.current_zone + 1)
-            elif self.direction == "backwards" and self.current_zone-1>0:
-                zones_to_light_up = (self.current_zone, self.current_zone - 1)
-            else:
-                zones_to_light_up = (self.current_zone, self.current_zone)
+            zones_to_light_up = self.__get_zones_to_light_up()
             
             # Update led state dictionary
-            self.set_device_led_states(zones_to_light_up)
-            
+            self.set_device_led_states(zones_to_light_up)      
             
             if self.journey.is_journey_complete():
                 print("Journey is complete")
-                journey_str = self.journey.get_journey_to_string()
-                self.server_api.add_event_to_queue(journey_str, "journey")
-                self.journey.stop_worker.set()
-                self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
-                self.current_zone = None
-                self.direction = "forwards"
-                return self.led_states
-            
+                self.__reset_and_send_journey()
+
             return self.led_states
+        
         except KeyError:
             print(f'Error in control_zones: {KeyError}')
+
+    def __update_journey_zone(self, zone):
+        if self.current_zone == None and zone == 1: # if the user enters the first zone
+            self.journey.enter_zone(zone)
+
+        elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
+            self.journey.enter_zone(zone)
+            if zone < self.current_zone: # if the user enters the previous zone
+                self.direction = "backwards"
+            else:
+                self.direction = "forwards" # if the user enters the next zone 
+        else:
+            pass # what happens if the user skips a zone?
+        self.current_zone = zone
+
+    def __get_zones_to_light_up(self):
+        if self.direction == "forwards" and self.current_zone + 1 <= self.zone_count:
+            zones_to_light_up = (self.current_zone, self.current_zone + 1)
+        elif self.direction == "backwards" and self.current_zone - 1 > 0:
+            zones_to_light_up = (self.current_zone, self.current_zone - 1)
+        else:
+            zones_to_light_up = (self.current_zone, self.current_zone)
+        return zones_to_light_up
+    
+    def __reset_and_send_journey(self):
+        journey_str = self.journey.get_journey_to_string()
+        self.server_api.add_event_to_queue(journey_str, "journey")
+        self.journey.stop_worker.set()
+        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
+        self.current_zone = None
+        self.direction = "forwards"
+
 
     
     
