@@ -89,8 +89,7 @@ class PGLController:
             else:
                 # Pass data and topic to the zone controller which returns (optional) a journey object and lights to be turned on
                 # journey is a dict with the zones and corresponding time interval tuples.
-                led_state_map = self.__zone_controller.control_zones(
-                                bool(occupancy), device.id_)
-
-                # Light up zones, and light down old zones
-                self.__z2m_client.change_light_zones_states (led_state_map)
+                if occupancy:
+                    led_state_map = self.__zone_controller.control_zones(device.id_)
+                    # Light up zones, and light down old zones
+                    self.__z2m_client.change_light_zones_states (led_state_map)
