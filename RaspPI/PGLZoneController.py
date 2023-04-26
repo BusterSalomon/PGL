@@ -5,11 +5,11 @@ from PGLModel import PGLZigbeeDevice, PGLModel
 
 class PGLZoneController:
     
-    def __init__(self, num_zones: int, devices_model: PGLModel = None):
+    def __init__(self, devices_model: PGLModel | None = None):
         # Initialise attributes
         self.zones_devices_map: dict[int, dict[str, str]] = {}
         self.led_states: dict[str, str] = {} # {device_id, state}
-        self.current_zone: int = None
+        self.current_zone: int | None = None
 
         # If a devices model is given, then bind devices to zone in increasing order
         # And initialise led states to off
@@ -33,7 +33,7 @@ class PGLZoneController:
     def bind_device_to_zone (self, zone_id: int, device: PGLZigbeeDevice) -> None:
         # zone_n: {"pir" : device_id,
         #          "led" : device id }
-        if self.zones_devices_map[zone_id]:
+        if self.zones_devices_map.get(zone_id):
             self.zones_devices_map[zone_id][device.type_] = device.id_
         else:
             self.zones_devices_map[zone_id] = {device.type_: device.id_}
@@ -76,8 +76,12 @@ class PGLZoneController:
     def get_zones_devices_map (self) -> dict[int, dict[str, str]]:
         return self.zones_devices_map
     
-    # get 
-    def set_device_led_states (self, zone_to_turn_on: tuple[int, int]):
+    # set_device_led_states
+    # sets dictionary 
+    def set_device_led_states (self, zone_to_turn_on: tuple[int, int] | None):
+        if zone_to_turn_on == None:
+            return None
+        
         led_ids: list[str] = self.get_device_ids_from_zone_ids(list(zone_to_turn_on), types=["led", "led"])
         
         # Update all states
@@ -90,25 +94,25 @@ class PGLZoneController:
     # Main control
     # Inputs: Takes occupancy and device_id related
     # Output: Returns the light led_states dictionary
-    def control_zones(self, device_id) -> dict[str, str]:
-        try:
-            self.__update_journey_zone(self.get_zone_from_device_id(device_id))
-            # lights is a tuple of the current zone and the next zone, depending on the direction
-            zones_to_light_up = self.__get_zones_to_light_up()
-            
-            # Update led state dictionary
-            self.set_device_led_states(zones_to_light_up)      
-            
-            if self.journey.is_journey_complete():
-                print("Journey is complete")
-                self.__reset_and_send_journey()
-
-            return self.led_states
+    def control_zones(self, device_id) -> dict[str, str] | None:
+        # Update journey, and return true if zone is valid
+        success : bool = self.__update_journey_zone(self.get_zone_from_device_id(device_id))
+        if not success:
+            return None
         
-        except KeyError:
-            print(f'Error in control_zones: {KeyError}')
+        # lights is a tuple of the current zone and the next zone, depending on the direction
+        zones_to_light_up = self.__get_zones_to_light_up()
+        
+        # Update led state dictionary
+        self.set_device_led_states(zones_to_light_up)      
+        
+        if self.journey.is_journey_complete():
+            print("Journey is complete")
+            self.__reset_and_send_journey()
 
-    def __update_journey_zone(self, zone):
+        return self.led_states
+
+    def __update_journey_zone(self, zone) -> bool:
         if self.current_zone == None and zone == 1: # if the user enters the first zone
             self.journey.enter_zone(zone)
 
@@ -119,19 +123,27 @@ class PGLZoneController:
             else:
                 self.direction = "forwards" # if the user enters the next zone 
         else:
-            pass # what happens if the user skips a zone?
+            # if the user enters a zone that is not the next or previous zone current zone is not updated
+            return False
         self.current_zone = zone
+        return True
 
-    def __get_zones_to_light_up(self):
+    # Returns a tuple of the current zone and the next zone, depending on the direction
+    def __get_zones_to_light_up(self) -> tuple[int, int] | None:
+        if self.current_zone == None:
+            return None
         if self.direction == "forwards" and self.current_zone + 1 <= self.zone_count:
             zones_to_light_up = (self.current_zone, self.current_zone + 1)
         elif self.direction == "backwards" and self.current_zone - 1 > 0:
             zones_to_light_up = (self.current_zone, self.current_zone - 1)
-        else:
+        elif self.direction == "backwards" and self.current_zone == 1:
             zones_to_light_up = (self.current_zone, self.current_zone)
+        else:
+            zones_to_light_up = (self.current_zone - 1, self.current_zone)
         return zones_to_light_up
     
-    def __reset_and_send_journey(self):
+    # Resets the journey and sends the journey to the server
+    def __reset_and_send_journey(self) -> None:
         journey_str = self.journey.get_journey_to_string()
         self.server_api.add_event_to_queue(journey_str, "journey")
         self.journey.stop_worker.set()

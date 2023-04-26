@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
         "Zigbee"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "off"
 }

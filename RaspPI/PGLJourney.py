@@ -7,7 +7,8 @@ from time import sleep
 
 class PGLJourney:
 
-    def __init__(self, last_zone : int, server_api_callback : object):
+    # TODO: add type to server_api_callback
+    def __init__(self, last_zone : int, server_api_callback):
         self.__zone_times = {} # {zone: [times]}
         self.__milestones = {'complete': False, 'bathroom': False}
         self.__last_zone = last_zone
@@ -42,7 +43,7 @@ class PGLJourney:
         journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time}; {socket.gethostname()}; "    #we should also add the RASPPI id here (last one) perhaps (socket.gethostname())
         return journey_string 
     
-    def __get_bathroom_time (self) -> datetime.timedelta:
+    def __get_bathroom_time (self) -> datetime.timedelta | str:
         bathroom_time = None
         if self.__milestones['bathroom'] == True:
             bathroom_start = self.__zone_times[self.__last_zone][0]
@@ -72,11 +73,12 @@ class PGLJourney:
             # If time limit have exceeded, call callback
             if (time_passed > self.__time_limit):
                 tmp_string = str(datetime.datetime.now()) + ";" + str(time_passed) + ";" + socket.gethostname() + ";"
+                print(tmp_string)
                 self.server_api_callback(tmp_string, "emergency")
             sleep(5)
 
     def __get_time_passed_in_bathroom (self) -> datetime.timedelta:
-        time_passed : datetime = datetime.timedelta(0)
+        time_passed : datetime.timedelta = datetime.timedelta(0)
         if (self.__last_zone == self.__current_zone):
             time_passed = datetime.datetime.now() - self.__zone_times[self.__last_zone][0]
         return time_passed
