@@ -43,7 +43,7 @@ class PGLJourney:
         journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time}; {socket.gethostname()}; "    #we should also add the RASPPI id here (last one) perhaps (socket.gethostname())
         return journey_string 
     
-    def __get_bathroom_time (self) -> datetime.timedelta | str:
+    def __get_bathroom_time (self):
         bathroom_time = None
         if self.__milestones['bathroom'] == True:
             bathroom_start = self.__zone_times[self.__last_zone][0]

@@ -96,7 +96,8 @@ class PGLZigbee2mqttMessage:
                        "zigbee2mqtt/bridge/devices",
                        "zigbee2mqtt/bridge/groups",
                        "zigbee2mqtt/bridge/request/health_check",
-                       "zigbee2mqtt/bridge/response/health_check"]:
+                       "zigbee2mqtt/bridge/response/health_check",
+                       "zigbee2mqtt/bridge/extensions"]:
             instance = None
         else:
             instance = cls(type_=PGLZigbee2mqttMessageType.DEVICE_EVENT,

@@ -30,7 +30,7 @@ class PGLController:
                                                  on_message_clbk=self.__zigbee2mqtt_event_received)
 
         # initialize zone controller object and tim
-        self.__zone_controller = PGLZoneController(5, self.__devices_model)
+        self.__zone_controller = PGLZoneController(self.__devices_model)
 
     def start(self) -> None:
         """ Start listening for zigbee2mqtt events.
@@ -57,7 +57,7 @@ class PGLController:
             return
 
         print(
-            f"zigbee2mqtt event received on topic {message.topic}: {message.event}")
+            f"zigbee2mqtt event received on topic {message.topic}: {message.event}, type: {message.type_}")
 
         # If the message is not a device event, then don't do anything.
         if message.type_ != PGLZigbee2mqttMessageType.DEVICE_EVENT:
@@ -72,6 +72,7 @@ class PGLController:
 
         # Retrieve the device ID from the topic.
         device_id = tokens[1]
+        print(tokens)
 
         # If the device ID is known, then process the device event and send a message to the remote
         # web server.

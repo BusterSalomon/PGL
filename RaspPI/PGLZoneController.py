@@ -2,10 +2,11 @@
 from PGLJourney import PGLJourney
 from PGLServerAPI import PGLServerAPI
 from PGLModel import PGLZigbeeDevice, PGLModel
+from typing import Optional
 
 class PGLZoneController:
     
-    def __init__(self, devices_model: PGLModel | None = None):
+    def __init__(self, devices_model: PGLModel = None):
         # Initialise attributes
         self.zones_devices_map: dict[int, dict[str, str]] = {}
         self.led_states: dict[str, str] = {} # {device_id, state}
@@ -78,7 +79,7 @@ class PGLZoneController:
     
     # set_device_led_states
     # sets dictionary 
-    def set_device_led_states (self, zone_to_turn_on: tuple[int, int] | None):
+    def set_device_led_states (self, zone_to_turn_on: Optional[tuple[int, int]]):
         if zone_to_turn_on == None:
             return None
         
@@ -94,7 +95,7 @@ class PGLZoneController:
     # Main control
     # Inputs: Takes occupancy and device_id related
     # Output: Returns the light led_states dictionary
-    def control_zones(self, device_id) -> dict[str, str] | None:
+    def control_zones(self, device_id) -> Optional[dict[str, str]]:
         # Update journey, and return true if zone is valid
         success : bool = self.__update_journey_zone(self.get_zone_from_device_id(device_id))
         if not success:
@@ -129,7 +130,7 @@ class PGLZoneController:
         return True
 
     # Returns a tuple of the current zone and the next zone, depending on the direction
-    def __get_zones_to_light_up(self) -> tuple[int, int] | None:
+    def __get_zones_to_light_up(self) -> Optional[tuple[int, int]]:
         if self.current_zone == None:
             return None
         if self.direction == "forwards" and self.current_zone + 1 <= self.zone_count:
