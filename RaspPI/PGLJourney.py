@@ -17,7 +17,7 @@ class PGLJourney:
 
         # Threading
         self.stop_worker = Event()
-        self.__time_limit : datetime.timedelta = datetime.timedelta(seconds=15)
+        self.__time_limit : datetime.timedelta = datetime.timedelta(seconds=60)
         self.__timer_thread = Thread(target=self.timing_worker, daemon=True)
         self.__timer_thread.start()
 
@@ -58,7 +58,7 @@ class PGLJourney:
         return bathroom_time
     
     def __set_milestones_if_complete (self, zone) -> None:
-        if (len(self.__zone_times) != 1 and zone == 0): # If the journey is not empty and the current zone is 0 then the journey is complete
+        if (len(self.__zone_times) != 1 and zone == 1): # If the journey is not empty and the current zone is 1 then the journey is complete
             self.__milestones['complete'] = True 
             if self.__last_zone in self.__zone_times: # If the last zone is in the zone_times
                 self.__milestones['bathroom'] = True
@@ -75,7 +75,7 @@ class PGLJourney:
                 tmp_string = str(datetime.datetime.now()) + ";" + str(time_passed) + ";" + socket.gethostname() + ";"
                 print(tmp_string)
                 self.server_api_callback(tmp_string, "emergency")
-            sleep(5)
+            sleep(10)
 
     def __get_time_passed_in_bathroom (self) -> datetime.timedelta:
         time_passed : datetime.timedelta = datetime.timedelta(0)

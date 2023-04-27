@@ -56,8 +56,7 @@ class PGLController:
         if not message:
             return
 
-        print(
-            f"zigbee2mqtt event received on topic {message.topic}: {message.event}, type: {message.type_}")
+        # print(f"zigbee2mqtt event received on topic {message.topic}: {message.event}, type: {message.type_}")
 
         # If the message is not a device event, then don't do anything.
         if message.type_ != PGLZigbee2mqttMessageType.DEVICE_EVENT:
@@ -72,7 +71,6 @@ class PGLController:
 
         # Retrieve the device ID from the topic.
         device_id = tokens[1]
-        print(tokens)
 
         # If the device ID is known, then process the device event and send a message to the remote
         # web server.
@@ -91,6 +89,7 @@ class PGLController:
                 # Pass data and topic to the zone controller which returns (optional) a journey object and lights to be turned on
                 # journey is a dict with the zones and corresponding time interval tuples.
                 if occupancy:
+                    print(f'{device.id_} says occupancy: {occupancy}')
                     led_state_map = self.__zone_controller.control_zones(device.id_)
                     # Light up zones, and light down old zones
                     self.__z2m_client.change_light_zones_states (led_state_map)

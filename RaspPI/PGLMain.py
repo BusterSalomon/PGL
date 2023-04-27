@@ -7,7 +7,11 @@ if __name__ == "__main__":
     # Create a data model and add a list of known Zigbee devices.
     devices_model = PGLModel()
     devices_model.add([PGLZigbeeDevice("PIR1_PIGEON", "pir"),
-                       PGLZigbeeDevice("LED1_PIGEON", "led")])
+                       PGLZigbeeDevice("LED1_PIGEON", "led"),
+                       PGLZigbeeDevice("PIR2_PIGEON", "pir"),
+                       PGLZigbeeDevice("LED2_PIGEON", "led"),
+                       PGLZigbeeDevice("PIR3_PIGEON", "pir"),
+                       PGLZigbeeDevice("LED3_PIGEON", "led")])
 
     # Create a controller and give it the data model that was instantiated.
     controller = PGLController(devices_model)
