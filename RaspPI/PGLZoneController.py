@@ -29,7 +29,7 @@ class PGLZoneController:
         self.zone_count = len(self.zones_devices_map)
         self.direction = "forwards"
         self.server_api = PGLServerAPI("test.mosquitto.org")
-        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue) 
+        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue)
         # the last zone is the bathroom zone, needed in journey class
         # to know when bathroom is visited.
         # We want the timer thread to be able to add event to the queue
@@ -54,12 +54,12 @@ class PGLZoneController:
         # Enumerate through devices map
         for _, zone in enumerate(self.zones_devices_map):
             #  Check if pir sensor in zone matches device_id if it exist
-            if (self.zones_devices_map[zone].get("pir") 
+            if (self.zones_devices_map[zone].get("pir")
                 and self.zones_devices_map[zone]["pir"] == device_id):
                 zone_to_return = zone
 
             #  Check if led in zone matches device_id if it exist
-            elif (self.zones_devices_map[zone].get("led") 
+            elif (self.zones_devices_map[zone].get("led")
                     and self.zones_devices_map[zone]["led"] == device_id):
                 zone_to_return = zone
 
@@ -112,7 +112,7 @@ class PGLZoneController:
         zones_to_light_up = self.__get_zones_to_light_up()
 
         # Update led state dictionary
-        self.set_device_led_states(zones_to_light_up)      
+        self.set_device_led_states(zones_to_light_up)
 
         if self.journey.is_journey_complete():
             print("Journey is complete")

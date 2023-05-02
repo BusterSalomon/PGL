@@ -28,7 +28,7 @@ class PGLServerAPI:
         self.__mqtt_client = MqttClient()
 
         # initialize callback methods
-        self.__mqtt_client.on_connect = self.__on_connect        
+        self.__mqtt_client.on_connect = self.__on_connect
         self.__mqtt_client.connect(host=self.__mqtt_host,  # connect to mqtt
                                    port=self.__mqtt_port)
         self.__mqtt_client.loop_start()                     # start loop
