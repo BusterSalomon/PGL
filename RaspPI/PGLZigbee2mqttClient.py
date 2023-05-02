@@ -174,14 +174,18 @@ class PGLZigbee2mqttClient:
         if not self.__connected:
             raise RuntimeError("The client is not connected. Connect first.")
 
+        print(f'Turning {state} light: {device_id}')
         self.__client.publish(topic=f"zigbee2mqtt/{device_id}/set",
                               payload=json.dumps({"state": f"{state}"}))
-    
+        
     # Light up the zones
     def change_light_zones_states (self, led_state_map: dict[str, str])-> None:
         # Check if client is connected
         if not self.__connected:
             raise RuntimeError("The client is not connected. Connect first.")
+        
+        if led_state_map == None:
+            return None
         
         # If connected, then light up
         else:

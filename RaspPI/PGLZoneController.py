@@ -13,7 +13,7 @@ class PGLZoneController:
         # Initialise attributes
         self.zones_devices_map: dict[int, dict[str, str]] = {}
         self.led_states: dict[str, str] = {} # {device_id, state}
-        self.current_zone: int | None = None
+        self.current_zone: int = None
 
         # If a devices model is given, then bind devices to zone in increasing order
         # And initialise led states to off
@@ -82,14 +82,21 @@ class PGLZoneController:
         """ Returns zone_devices_map"""
         return self.zones_devices_map
 
-    def set_device_led_states (self, zone_to_turn_on: Optional[tuple[int, int]]):
-        """ Sets led states dictionary to turn on the led's in the given zones"""
-        if zone_to_turn_on is None:
+    
+    # set_device_led_states
+    # sets dictionary 
+    def set_device_led_states (self, zone_to_turn_on: Optional[tuple[int, int]], turn_all_off : Optional[bool] = False):
+
+        if turn_all_off == True:
+            for _, cur_led_id in enumerate(self.led_states):
+                self.led_states[cur_led_id] = "OFF"
             return None
-
-        led_ids: list[str] = self.get_device_ids_from_zone_ids(list(zone_to_turn_on),
-                                                                types=["led", "led"])
-
+        
+        if zone_to_turn_on == None:
+            return None    
+        
+        led_ids: list[str] = self.get_device_ids_from_zone_ids(list(zone_to_turn_on), types=["led", "led"])
+        
         # Update all states
         for _, cur_led_id in enumerate(self.led_states):
             if (cur_led_id == led_ids[0] or cur_led_id == led_ids[1]):
@@ -106,8 +113,9 @@ class PGLZoneController:
         # Update journey, and return true if zone is valid
         success : bool = self.__update_journey_zone(self.get_zone_from_device_id(device_id))
         if not success:
-            return None
-
+            self.set_device_led_states(None, turn_all_off=True)
+            return self.led_states
+        
         # lights is a tuple of the current zone and the next zone, depending on the direction
         zones_to_light_up = self.__get_zones_to_light_up()
 
@@ -125,7 +133,10 @@ class PGLZoneController:
         if self.current_zone is None and zone == 1: # if the user enters the first zone
             self.journey.enter_zone(zone)
 
-        elif abs(zone - self.current_zone) == 1: # if the user enters the next zone
+        elif self.current_zone == None:     #if user enters random zone without being in any previously
+            return False
+        
+        elif abs(zone - self.current_zone) <= 1: # if the user enters the next zone or stays in the current
             self.journey.enter_zone(zone)
             if zone < self.current_zone: # if the user enters the previous zone
                 self.direction = "backwards"
@@ -142,13 +153,15 @@ class PGLZoneController:
         """ Returns a tuple of the current zone and the next zone, depending on the direction"""
         if self.current_zone is None:
             return None
-        if self.direction == "forwards" and self.current_zone + 1 <= self.zone_count:
+        if self.direction == "forwards" and self.current_zone + 1 <= self.zone_count:       #going forward and zones left
             zones_to_light_up = (self.current_zone, self.current_zone + 1)
-        elif self.direction == "backwards" and self.current_zone - 1 > 0:
+        elif self.direction == "backwards" and self.current_zone - 1 > 0:                   #going backwards and zones left
             zones_to_light_up = (self.current_zone, self.current_zone - 1)
-        elif self.direction == "backwards" and self.current_zone == 1:
+        elif self.direction == "backwards" and self.current_zone == 1:                      #reached the bedroom
             zones_to_light_up = (self.current_zone, self.current_zone)
-        else:
+        elif self.direction == "forwards" and self.current_zone == self.zone_count:         #reached the bathroom
+            zones_to_light_up = (self.current_zone, self.current_zone)
+        else:                                                                               #in the same zone as before in the middle of the route
             zones_to_light_up = (self.current_zone - 1, self.current_zone)
         return zones_to_light_up
 
