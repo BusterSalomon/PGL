@@ -8,14 +8,14 @@ from PGLZoneController import PGLZoneController
 
 
 class PGLController:
-    MQTT_BROKER_HOST = "localhost"
-    MQTT_BROKER_PORT = 1883
-
     """ The controller is responsible for managing events received from zigbee2mqtt and handle them.
     By handle them it can be process, store and communicate with other parts of the system. In this
     case, the class listens for zigbee2mqtt events, processes them (turn on another Zigbee device)
     and send an event to a remote HTTP server.
     """
+
+    MQTT_BROKER_HOST = "localhost"
+    MQTT_BROKER_PORT = 1883
 
     def __init__(self, devices_model: PGLModel) -> None:
         """ Class initializer. The actuator and monitor devices are loaded (filtered) only when the
@@ -57,13 +57,14 @@ class PGLController:
             return
 
         print(
-            f"zigbee2mqtt event received on topic {message.topic}: {message.event}, type: {message.type_}")
+            f"zigbee2mqtt event received on topic {message.topic}: \
+                {message.event}, type: {message.type_}")
 
         # If the message is not a device event, then don't do anything.
         if message.type_ != PGLZigbee2mqttMessageType.DEVICE_EVENT:
             return
 
-        # Parse the topic to retreive the device ID. If the topic only has one level, don't do
+        # Parse the topic to retrieve the device ID. If the topic only has one level, don't do
         # anything.
 
         tokens = message.topic.split("/")
@@ -77,7 +78,7 @@ class PGLController:
         # If the device ID is known, then process the device event and send a message to the remote
         # web server.
         device = self.__devices_model.find(device_id)
-        
+
         # If the type of the event is a motion sensor
         if device.type_ == "pir":
             # reset alarm timer in its own thread, when journey complete stop timer.
@@ -88,7 +89,8 @@ class PGLController:
             except KeyError:
                 pass
             else:
-                # Pass data and topic to the zone controller which returns (optional) a journey object and lights to be turned on
+                # Pass data and topic to the zone controller which
+                # returns (optional) a journey object and lights to be turned on
                 # journey is a dict with the zones and corresponding time interval tuples.
                 if occupancy:
                     led_state_map = self.__zone_controller.control_zones(device.id_)
