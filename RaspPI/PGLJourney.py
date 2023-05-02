@@ -17,9 +17,10 @@ class PGLJourney:
     def __init__(self, last_zone : int, server_api_callback):
         self.__zone_times = {} # {zone: [times]}
         self.__milestones = {'complete': False, 'bathroom': False}
-        self.__last_zone = last_zone
         self.__current_zone = None
+        self.__last_zone = last_zone
         self.server_api_callback = server_api_callback
+        self.__timeout = datetime.timedelta(seconds=60)
 
         # Threading
         self.stop_worker = Event()
@@ -30,6 +31,15 @@ class PGLJourney:
 
     def enter_zone (self, zone : int) -> None:
         """ Enters the given zone and updates the journey object"""
+
+        # if time since last zone is less than timeout, reset journey.
+        if self.__current_zone is not None:
+            time_delta = datetime.datetime.now() - self.__zone_times[self.__current_zone][-1]
+            if time_delta < self.__timeout:
+                self.__zone_times = {} # {zone: [times]}
+                self.__milestones = {'complete': False, 'bathroom': False}
+                self.__current_zone = None
+
         self.__current_zone = zone # mutex maybe?
 
         latest_timestamp = datetime.datetime.now()
