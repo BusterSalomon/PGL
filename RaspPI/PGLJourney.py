@@ -64,7 +64,7 @@ class PGLJourney:
         journey_time = self.__zone_times[1][-1] - self.__zone_times[1][0]
         bathroom_time = self.__get_bathroom_time()
         journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time};\
-              {socket.gethostname()}; "
+              {socket.gethostname()}; "         ##READ: Should we use hostname or serial number of pi?
         return journey_string
 
     def __get_bathroom_time (self) -> datetime.timedelta:
