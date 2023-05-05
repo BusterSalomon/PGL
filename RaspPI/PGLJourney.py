@@ -97,7 +97,7 @@ class PGLJourney:
         """ Worker that checks if the time limit has been exceeded. 
 
         Runs in a separate thread. 
-        Checks if the time limit has been exceeded, every 5 seconds.
+        Checks if the time limit has been exceeded, every 10 seconds.
         """
         while not self.stop_worker.is_set():
             time_passed = self.__get_time_passed_in_bathroom()
