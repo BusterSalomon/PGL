@@ -14,8 +14,8 @@ class PGLJourney:
     exceeded in bathroom, thus potentially a fall has occurred.
     """
 
-    def __init__(self, last_zone : int, server_api_callback):
-        self.__zone_times = {} # {zone: [times]}
+    def __init__(self, last_zone: int, server_api_callback):
+        self.__zone_times = {}  # {zone: [times]}
         self.__milestones = {'complete': False, 'bathroom': False}
         self.__current_zone = None
         self.__last_zone = last_zone
@@ -24,23 +24,23 @@ class PGLJourney:
 
         # Threading
         self.stop_worker = Event()
-        self.__time_limit : datetime.timedelta = datetime.timedelta(seconds=60)
+        self.__time_limit: datetime.timedelta = datetime.timedelta(seconds=60)
         self.__timer_thread = Thread(target=self.timing_worker, daemon=True)
         self.__timer_thread.start()
 
-
-    def enter_zone (self, zone : int) -> None:
+    def enter_zone(self, zone: int) -> None:
         """ Enters the given zone and updates the journey object"""
 
         # if time since last zone is less than timeout, reset journey.
         if self.__current_zone is not None:
-            time_delta = datetime.datetime.now() - self.__zone_times[self.__current_zone][-1]
-            if time_delta < self.__timeout:
-                self.__zone_times = {} # {zone: [times]}
+            time_delta = datetime.datetime.now(
+            ) - self.__zone_times[self.__current_zone][-1]
+            if time_delta > self.__timeout:
+                self.__zone_times = {}  # {zone: [times]}
                 self.__milestones = {'complete': False, 'bathroom': False}
                 self.__current_zone = None
 
-        self.__current_zone = zone # mutex maybe?
+        self.__current_zone = zone  # mutex maybe?
 
         latest_timestamp = datetime.datetime.now()
         if zone in self.__zone_times:
@@ -52,22 +52,22 @@ class PGLJourney:
         # If not the first entrance (start) and the zone added is zero
         self.__set_milestones_if_complete(zone)
 
-    def get_journey_to_string (self) -> str:
+    def get_journey_to_string(self) -> str:
         """ Returns the journey as a string. 
-        
+
         Formatted as:
         <start_time>; <journey_time>; <bathroom_time>; <raspberry_pi_id>
         Returns "No journey" if the journey is not complete.
         """
-        if not self.__zone_times: # If the journey is empty
+        if not self.__zone_times:  # If the journey is empty
             return "No journey"
         journey_time = self.__zone_times[1][-1] - self.__zone_times[1][0]
         bathroom_time = self.__get_bathroom_time()
-        journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time};\
-              {socket.gethostname()}; "         ##READ: Should we use hostname or serial number of pi?
+        # READ: Should we use hostname or serial number of pi?
+        journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time};{socket.gethostname()}; "
         return journey_string
 
-    def __get_bathroom_time (self) -> datetime.timedelta:
+    def __get_bathroom_time(self) -> datetime.timedelta:
         """ Returns the time spent in the bathroom."""
         bathroom_time = None
         if self.__milestones['bathroom']:
@@ -82,19 +82,20 @@ class PGLJourney:
             bathroom_time = 'N/A'
         return bathroom_time
 
-    def __set_milestones_if_complete (self, zone) -> None:
-        if (len(self.__zone_times) != 1 and zone == 1): # If the journey is not empty and the current zone is 1 then the journey is complete
-            self.__milestones['complete'] = True 
-            if self.__last_zone in self.__zone_times: # If the last zone is in the zone_times
+    def __set_milestones_if_complete(self, zone) -> None:
+        # If the journey is not empty and the current zone is 1 then the journey is complete
+        if (len(self.__zone_times) != 1 and zone == 1):
+            self.__milestones['complete'] = True
+            if self.__last_zone in self.__zone_times:  # If the last zone is in the zone_times
                 self.__milestones['bathroom'] = True
 
-    def is_journey_complete (self) -> bool:
+    def is_journey_complete(self) -> bool:
         """ Returns true if the journey is complete, and bathroom has been visited. """
         return self.__milestones['complete'] and self.__milestones['bathroom']
 
-    def timing_worker (self) -> None:
+    def timing_worker(self) -> None:
         """ Worker that checks if the time limit has been exceeded. 
-        
+
         Runs in a separate thread. 
         Checks if the time limit has been exceeded, every 5 seconds.
         """
@@ -103,23 +104,23 @@ class PGLJourney:
 
             # If time limit have exceeded, call callback
             if time_passed > self.__time_limit:
-                tmp_string = str(datetime.datetime.now()) + ";" + str(time_passed) \
-                + ";" + socket.gethostname() + ";"
+                tmp_string = str(datetime.datetime.now()) + ";" + str(time_passed)+ ";" + socket.gethostname() + ";"
                 print(tmp_string)
                 self.server_api_callback(tmp_string, "emergency")
             sleep(10)
 
-    def __set_milestones_if_complete (self, zone) -> None:
+    def __set_milestones_if_complete(self, zone) -> None:
         """ Sets the milestones if the journey, depending on what is done. """
         # If the journey is not empty and the current zone is 0 then the journey is complete
-        if (len(self.__zone_times) != 1 and zone == 0):
+        if (len(self.__zone_times) != 1 and zone == 1):
             self.__milestones['complete'] = True
-            if self.__last_zone in self.__zone_times: # If the last zone is in the zone_times
+            if self.__last_zone in self.__zone_times:  # If the last zone is in the zone_times
                 self.__milestones['bathroom'] = True
 
-    def __get_time_passed_in_bathroom (self) -> datetime.timedelta:
+    def __get_time_passed_in_bathroom(self) -> datetime.timedelta:
         """ Returns the time passed in the bathroom."""
-        time_passed : datetime.timedelta = datetime.timedelta(0)
+        time_passed: datetime.timedelta = datetime.timedelta(0)
         if self.__last_zone == self.__current_zone:
-            time_passed = datetime.datetime.now() - self.__zone_times[self.__last_zone][0]
+            time_passed = datetime.datetime.now(
+            ) - self.__zone_times[self.__last_zone][0]
         return time_passed

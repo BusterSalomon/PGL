@@ -51,7 +51,7 @@ print(lights)
 sleep(1)
 
 sleep(10)
-
+print("\n")
 
 # TEST CASE 2: Emergency when stuck in zone 3
 lights = zone_controller.control_zones("PIR1_Pigeon")
