@@ -171,6 +171,6 @@ class PGLZoneController:
         journey_str = self.journey.get_journey_to_string()
         self.server_api.add_event_to_queue(journey_str, "journey")
         self.journey.stop_worker.set()
-        self.journey = PGLJourney(self.zone_count - 1, self.server_api.add_event_to_queue)
+        self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue)
         self.current_zone = None
         self.direction = "forwards"

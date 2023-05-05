@@ -63,7 +63,7 @@ class PGLJourney:
             return "No journey"
         journey_time = self.__zone_times[1][-1] - self.__zone_times[1][0]
         bathroom_time = self.__get_bathroom_time()
-        # READ: Should we use hostname or serial number of pi?
+        # READ: Should we use hostname or serial number of pi? https://www.raspberrypi-spy.co.uk/2012/09/getting-your-raspberry-pi-serial-number-using-python/
         journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time};{socket.gethostname()}; "
         return journey_string
 
