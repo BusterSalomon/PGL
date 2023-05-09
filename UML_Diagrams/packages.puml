@@ -1,0 +1,28 @@
+@startuml packages
+set namespaceSeparator none
+package "src" as src {
+}
+package "src.PGLController" as src.PGLController {
+}
+package "src.PGLJourney" as src.PGLJourney {
+}
+package "src.PGLMain" as src.PGLMain {
+}
+package "src.PGLModel" as src.PGLModel {
+}
+package "src.PGLServerAPI" as src.PGLServerAPI {
+}
+package "src.PGLZigbee2mqttClient" as src.PGLZigbee2mqttClient {
+}
+package "src.PGLZoneController" as src.PGLZoneController {
+}
+src.PGLController --> src.PGLModel
+src.PGLController --> src.PGLZigbee2mqttClient
+src.PGLController --> src.PGLZoneController
+src.PGLMain --> src.PGLController
+src.PGLMain --> src.PGLModel
+src.PGLZigbee2mqttClient --> src.PGLModel
+src.PGLZoneController --> src.PGLJourney
+src.PGLZoneController --> src.PGLModel
+src.PGLZoneController --> src.PGLServerAPI
+@enduml
