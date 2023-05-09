@@ -1,0 +1,127 @@
+@startuml classes
+set namespaceSeparator none
+class "Event_" as src.PGLServerAPI.Event_ {
+  payload : str
+  type : str
+  __init__(self, type: str, payload: str) -> None
+}
+class "PGLController" as src.PGLController.PGLController {
+  MQTT_BROKER_HOST : str
+  MQTT_BROKER_PORT : int
+  __devices_model
+  __z2m_client
+  __zone_controller
+  __init__(devices_model: PGLModel) -> None
+  __zigbee2mqtt_event_received(message: PGLZigbee2mqttMessage) -> None
+  start() -> None
+  stop() -> None
+}
+class "PGLJourney" as src.PGLJourney.PGLJourney {
+  __current_zone : NoneType, int
+  __last_zone : int
+  __milestones : dict
+  __time_limit : timedelta
+  __timeout : timedelta
+  __timer_thread : Thread
+  __zone_times : dict
+  server_api_callback
+  stop_worker : Event
+  __get_bathroom_time() -> datetime.timedelta
+  __get_time_passed_in_bathroom() -> datetime.timedelta
+  __init__(last_zone: int, server_api_callback)
+  __set_milestones_if_complete(zone) -> None
+  enter_zone(zone: int) -> None
+  get_journey_to_string() -> str
+  is_journey_complete() -> bool
+  timing_worker() -> None
+}
+class "PGLModel" as src.PGLModel.PGLModel {
+  __devices : dict
+  actuators_list
+  devices_list
+  sensors_list
+  __init__()
+  add(device: Union[PGLZigbeeDevice, List[PGLZigbeeDevice]]) -> None
+  find(device_id: str) -> Optional[PGLZigbeeDevice]
+}
+class "PGLServerAPI" as src.PGLServerAPI.PGLServerAPI {
+  __EMERGENCY_TYPE : str
+  __JOURNEY_TYPE : str
+  __REQUEST_EMERGENCY_TOPIC : str
+  __REQUEST_STORE_EVENT_IN_DB_TOPIC : str
+  __events_queue : Queue
+  __mqtt_client : Client
+  __mqtt_host : str
+  __mqtt_port : int
+  __stop_worker : Event
+  __worker_thread : Thread
+  __init__(mqtt_host: str, mqtt_port: int) -> None
+  __on_connect(client, userdata, flags, rc) -> None
+  __worker() -> None
+  add_event_to_queue(payload: str, event_type: str) -> None
+  stop_server_api()
+}
+class "PGLZigbee2mqttClient" as src.PGLZigbee2mqttClient.PGLZigbee2mqttClient {
+  ROOT_TOPIC : str
+  __client : Client
+  __connected : bool
+  __events_queue : Queue
+  __host : str
+  __on_message_clbk : Callable[[Optional[PGLZigbee2mqttMessage]], None]
+  __port : int
+  __stop_worker : Event
+  __subscriber_thread : Thread
+  __topics : List[str]
+  __init__(host: str, on_message_clbk: Callable[[Optional[PGLZigbee2mqttMessage]], None], port: int, topics: List[str])
+  __on_connect(client, userdata, flags, rc) -> None
+  __on_disconnect(client, userdata, rc) -> None
+  __on_message(client, userdata, message: MQTTMessage) -> None
+  __worker() -> None
+  change_light_zones_states(led_state_map: dict[str, str]) -> None
+  change_state(device_id: str, state: str) -> None
+  check_health() -> str
+  connect() -> None
+  disconnect() -> None
+}
+class "PGLZigbee2mqttMessage" as src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage {
+  data : Optional[Any]
+  event : Optional[Any]
+  message : Optional[Any]
+  meta : Optional[Any]
+  state : Optional[str]
+  status : Optional[str]
+  topic : str
+  type_
+  __init__(self, topic: str, type_: PGLZigbee2mqttMessageType, data: Any, event: Any, message: Any, meta: Any, status: str, state: str) -> None
+  parse(topic: str, message: str) -> PGLZigbee2mqttMessage
+}
+class "PGLZigbee2mqttMessageType" as src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType {
+  name
+}
+class "PGLZigbeeDevice" as src.PGLModel.PGLZigbeeDevice {
+  id_ : str
+  type_ : str
+  __init__(self, id_: str, type_: str) -> None
+}
+class "PGLZoneController" as src.PGLZoneController.PGLZoneController {
+  current_zone : Optional[int], NoneType
+  direction : str
+  journey
+  led_states : dict[str, str]
+  server_api
+  zone_count : int
+  zones_devices_map : dict[int, dict[str, str]]
+  __get_zones_to_light_up() -> Optional[tuple[int, int]]
+  __init__(devices_model: PGLModel)
+  __reset_and_send_journey() -> None
+  __update_journey_zone(zone) -> bool
+  bind_device_to_zone(zone_id: int, device: PGLZigbeeDevice) -> None
+  control_zones(device_id) -> Optional[dict[str, str]]
+  get_device_id_from_zone_id(zone_id: int, device_type: str) -> str
+  get_device_ids_from_zone_ids(zone_ids: list[int], types: list[str])
+  get_zone_from_device_id(device_id: str) -> int
+  get_zones_devices_map() -> dict[int, dict[str, str]]
+  set_device_led_states(zone_to_turn_on: Optional[tuple[int, int]], turn_all_off: Optional[bool])
+}
+src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType --* src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage : type_
+@enduml
