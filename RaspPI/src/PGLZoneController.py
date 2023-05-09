@@ -160,7 +160,7 @@ class PGLZoneController:
         elif self.direction == "backwards" and self.current_zone == 1:                      #reached the bedroom
             zones_to_light_up = (self.current_zone, self.current_zone)
         elif self.direction == "forwards" and self.current_zone == self.zone_count:         #reached the bathroom
-            zones_to_light_up = (self.current_zone, self.current_zone)
+            zones_to_light_up = (self.current_zone-1, self.current_zone)
         else:                                                                               #in the same zone as before in the middle of the route
             zones_to_light_up = (self.current_zone - 1, self.current_zone)
         return zones_to_light_up
