@@ -11,7 +11,9 @@ if __name__ == "__main__":
                        PGLZigbeeDevice("PIR2_PIGEON", "pir"),
                        PGLZigbeeDevice("LED2_PIGEON", "led"),
                        PGLZigbeeDevice("PIR3_PIGEON", "pir"),
-                       PGLZigbeeDevice("LED3_PIGEON", "led")])
+                       PGLZigbeeDevice("LED3_PIGEON", "led"),
+                       PGLZigbeeDevice("PIR4_PIGEON", "pir"),
+                       PGLZigbeeDevice("LED4_PIGEON", "led")])
 
     # Create a controller and give it the data model that was instantiated.
     controller = PGLController(devices_model)
