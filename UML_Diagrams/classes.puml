@@ -17,7 +17,7 @@ class "PGLController" as src.PGLController.PGLController {
   stop() -> None
 }
 class "PGLJourney" as src.PGLJourney.PGLJourney {
-  __current_zone : int, NoneType
+  __current_zone : NoneType, int
   __last_zone : int
   __milestones : dict
   __time_limit : timedelta
@@ -123,14 +123,5 @@ class "PGLZoneController" as src.PGLZoneController.PGLZoneController {
   get_zones_devices_map() -> dict[int, dict[str, str]]
   set_device_led_states(zone_to_turn_on: Optional[tuple[int, int]], turn_all_off: Optional[bool])
 }
-src.PGLController.PGLController --> src.PGLModel.PGLModel
-src.PGLController.PGLController --> src.PGLZigbee2mqttClient.PGLZigbee2mqttClient
-src.PGLController.PGLController --> src.PGLZoneController.PGLZoneController
-src.PGLMain.PGLMain --> src.PGLController.PGLController
-src.PGLMain.PGLMain --> src.PGLModel.PGLModel
-src.PGLZigbee2mqttClient.PGLZigbee2mqttClient --> src.PGLModel.PGLModel
-src.PGLZoneController.PGLZoneController --> src.PGLJourney.PGLJourney
-src.PGLZoneController.PGLZoneController --> src.PGLModel.PGLModel
-src.PGLZoneController.PGLZoneController --> src.PGLServerAPI.PGLServerAPI
-
+src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType --* src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage : type_
 @enduml
