@@ -36,8 +36,8 @@ class PGLController:
         """ Start listening for zigbee2mqtt events.
         """
         self.__z2m_client.connect()
-
         print(f"Zigbee2Mqtt is {self.__z2m_client.check_health()}")
+        self.__z2m_client.change_light_zones_states(self.__zone_controller.led_states)      #turn off all LEDS at start
 
     def stop(self) -> None:
         """ Stop listening for zigbee2mqtt events.
@@ -96,4 +96,4 @@ class PGLController:
                 print(f'{device.id_} says occupancy: {occupancy}')
                 led_state_map = self.__zone_controller.control_zones(device.id_, occupancy)
                 # Light up zones, and light down old zones
-                self.__z2m_client.change_light_zones_states (led_state_map)
+                self.__z2m_client.change_light_zones_states(led_state_map)

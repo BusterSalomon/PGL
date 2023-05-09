@@ -33,6 +33,7 @@ class PGLZoneController:
         # the last zone is the bathroom zone, needed in journey class
         # to know when bathroom is visited.
         # We want the timer thread to be able to add event to the queue
+        self.set_device_led_states(None, True)                  #initialize all zones to OFF
 
 
     def bind_device_to_zone (self, zone_id: int, device: PGLZigbeeDevice) -> None:
