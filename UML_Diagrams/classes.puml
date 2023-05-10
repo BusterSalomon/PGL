@@ -1,5 +1,11 @@
 @startuml classes
 set namespaceSeparator none
+skinparam classFontSize 40
+
+class "PGLMain" as src.PGLMain {
+  main() -> None
+}
+
 class "Event_" as src.PGLServerAPI.Event_ {
   payload : str
   type : str
@@ -96,7 +102,6 @@ class "PGLZigbee2mqttMessage" as src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage 
   parse(topic: str, message: str) -> PGLZigbee2mqttMessage
 }
 class "PGLZigbee2mqttMessageType" as src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType {
-  name
 }
 class "PGLZigbeeDevice" as src.PGLModel.PGLZigbeeDevice {
   id_ : str
@@ -123,5 +128,16 @@ class "PGLZoneController" as src.PGLZoneController.PGLZoneController {
   get_zones_devices_map() -> dict[int, dict[str, str]]
   set_device_led_states(zone_to_turn_on: Optional[tuple[int, int]], turn_all_off: Optional[bool])
 }
-src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType --* src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage : type_
+
+src.PGLMain *--> src.PGLController.PGLController
+src.PGLMain *--> src.PGLModel.PGLModel
+src.PGLModel.PGLModel o-> src.PGLModel.PGLZigbeeDevice
+src.PGLController.PGLController *--> src.PGLZigbee2mqttClient.PGLZigbee2mqttClient
+src.PGLController.PGLController *--> src.PGLZoneController.PGLZoneController
+src.PGLZoneController.PGLZoneController *--> src.PGLJourney.PGLJourney
+src.PGLController.PGLController --> src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage
+src.PGLZigbee2mqttClient.PGLZigbee2mqttMessage --> src.PGLZigbee2mqttClient.PGLZigbee2mqttMessageType
+src.PGLZoneController.PGLZoneController --> src.PGLServerAPI.PGLServerAPI
+src.PGLServerAPI.PGLServerAPI --> src.PGLServerAPI.Event_
+
 @enduml
