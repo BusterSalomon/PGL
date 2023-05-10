@@ -20,7 +20,7 @@ class PGLJourney:
         self.__current_zone = None
         self.__last_zone = last_zone
         self.server_api_callback = server_api_callback
-        self.__timeout = datetime.timedelta(seconds=60)
+        self.__timeout = datetime.timedelta(seconds=600)
 
         # Threading
         self.stop_worker = Event()
@@ -33,8 +33,7 @@ class PGLJourney:
 
         # if time since last zone is less than timeout, reset journey.
         if self.__current_zone is not None:
-            time_delta = datetime.datetime.now(
-            ) - self.__zone_times[self.__current_zone][-1]
+            time_delta = datetime.datetime.now() - self.__zone_times[self.__current_zone][-1]
             if time_delta > self.__timeout:
                 self.__zone_times = {}  # {zone: [times]}
                 self.__milestones = {'complete': False, 'bathroom': False}
@@ -81,13 +80,6 @@ class PGLJourney:
         else:
             bathroom_time = 'N/A'
         return bathroom_time
-
-    def __set_milestones_if_complete(self, zone) -> None:
-        # If the journey is not empty and the current zone is 1 then the journey is complete
-        if (len(self.__zone_times) != 1 and zone == 1):
-            self.__milestones['complete'] = True
-            if self.__last_zone in self.__zone_times:  # If the last zone is in the zone_times
-                self.__milestones['bathroom'] = True
 
     def is_journey_complete(self) -> bool:
         """ Returns true if the journey is complete, and bathroom has been visited. """
