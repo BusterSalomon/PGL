@@ -127,7 +127,8 @@ class PGLZoneController:
 
             if self.journey.is_journey_complete():
                 print("Journey is complete")
-                self.__reset_and_send_journey()
+                self.__send_journey()
+                self.__reset_journey()
 
             return self.led_states
 
@@ -176,11 +177,15 @@ class PGLZoneController:
             zones_to_light_up = (self.current_zone - 1, self.current_zone)
         return zones_to_light_up
 
-    # Resets the journey and sends the journey to the server
-    def __reset_and_send_journey(self) -> None:
-        """ Resets the journey and sends the journey to the server"""
+    # sends the journey to the server
+    def __send_journey(self) -> None:
+        """sends the journey to the server"""
         journey_str = self.journey.get_journey_to_string()
         self.server_api.add_event_to_queue(journey_str, "journey")
+
+    # resets the journey
+    def __reset_journey(self) -> None:
+        """resets the journey"""
         self.journey.stop_worker.set()
         self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue)
         self.current_zone = None
