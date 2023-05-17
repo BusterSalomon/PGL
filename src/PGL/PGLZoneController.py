@@ -33,6 +33,7 @@ class PGLZoneController:
         # the last zone is the bathroom zone, needed in journey class
         # to know when bathroom is visited.
         # We want the timer thread to be able to add event to the queue
+        self.set_device_led_states(None, True)                  #initialize all zones to OFF
 
 
     def bind_device_to_zone (self, zone_id: int, device: PGLZigbeeDevice) -> None:
@@ -104,33 +105,44 @@ class PGLZoneController:
             else:
                 self.led_states[cur_led_id] = "OFF"
 
-    def control_zones(self, device_id) -> Optional[dict[str, str]]:
+    def control_zones(self, device_id, occupancy) -> Optional[dict[str, str]]:
         """ Main control function. 
         
         Takes in device_id of activated pir sensor.
         updates the journey object and returns led_states dictionary
         """
-        # Update journey, and return true if zone is valid
-        success : bool = self.__update_journey_zone(self.get_zone_from_device_id(device_id))
-        if not success:
-            self.set_device_led_states(None, turn_all_off=True)
+
+        if occupancy:
+            # Update journey, and return true if zone is valid
+            success : bool = self.__update_journey_zone(self.get_zone_from_device_id(device_id))
+            if not success:
+                self.set_device_led_states(None, turn_all_off=True)
+                return self.led_states
+            
+            # lights is a tuple of the current zone and the next zone, depending on the direction
+            zones_to_light_up = self.__get_zones_to_light_up()
+
+            # Update led state dictionary
+            self.set_device_led_states(zones_to_light_up)
+
+            if self.journey.is_journey_complete():
+                print("Journey is complete")
+                self.__send_journey()
+                self.__reset_journey()
+
             return self.led_states
-        
-        # lights is a tuple of the current zone and the next zone, depending on the direction
-        zones_to_light_up = self.__get_zones_to_light_up()
 
-        # Update led state dictionary
-        self.set_device_led_states(zones_to_light_up)
+        else:
+            zone = self.get_zone_from_device_id(device_id) 
+            if zone == 1 and self.direction == "backwards":
+                self.set_device_led_states(None, True)
+                return self.led_states
 
-        if self.journey.is_journey_complete():
-            print("Journey is complete")
-            self.__reset_and_send_journey()
-
-        return self.led_states
 
     def __update_journey_zone(self, zone) -> bool:
         """ Updates the journey object with the given zone"""
         if self.current_zone is None and zone == 1: # if the user enters the first zone
+            self.direction = "forwards"
             self.journey.enter_zone(zone)
 
         elif self.current_zone == None:     #if user enters random zone without being in any previously
@@ -165,12 +177,15 @@ class PGLZoneController:
             zones_to_light_up = (self.current_zone - 1, self.current_zone)
         return zones_to_light_up
 
-    # Resets the journey and sends the journey to the server
-    def __reset_and_send_journey(self) -> None:
-        """ Resets the journey and sends the journey to the server"""
+    # sends the journey to the server
+    def __send_journey(self) -> None:
+        """sends the journey to the server"""
         journey_str = self.journey.get_journey_to_string()
         self.server_api.add_event_to_queue(journey_str, "journey")
+
+    # resets the journey
+    def __reset_journey(self) -> None:
+        """resets the journey"""
         self.journey.stop_worker.set()
         self.journey = PGLJourney(self.zone_count, self.server_api.add_event_to_queue)
         self.current_zone = None
-        self.direction = "forwards"
