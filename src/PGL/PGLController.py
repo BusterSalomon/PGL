@@ -1,10 +1,11 @@
-from PGLModel import PGLModel
+from PGL.PGLModel import PGLModel
 # from PGLWebClient import PGLWebClient, PGLWebDeviceEvent
-from PGLZigbee2mqttClient import (PGLZigbee2mqttClient,
+from PGL.PGLZigbee2mqttClient import (PGLZigbee2mqttClient,
                                   PGLZigbee2mqttMessage, PGLZigbee2mqttMessageType)
 
 # import zone controller
-from PGLZoneController import PGLZoneController
+from PGL.PGLZoneController import PGLZoneController
+a = PGLModel
 
 
 class PGLController:

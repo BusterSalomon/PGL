@@ -1,7 +1,7 @@
 from typing import Optional
-from PGLJourney import PGLJourney
-from PGLServerAPI import PGLServerAPI
-from PGLModel import PGLZigbeeDevice, PGLModel
+from PGL.PGLJourney import PGLJourney
+from PGL.PGLServerAPI import PGLServerAPI
+from PGL.PGLModel import PGLZigbeeDevice, PGLModel
 
 class PGLZoneController:
     """ Class that controls the zones of the house. 
