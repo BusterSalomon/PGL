@@ -1,0 +1,68 @@
+<mxfile host="Electron" modified="2023-05-18T07:09:19.626Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="N-M7bXDHqNGUCiJ230hl" version="21.2.8" type="device">
+  <diagram name="Side-1" id="SiDDO26hAiSWuMUm6UWj">
+    <mxGraphModel dx="962" dy="566" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8Q1biNkkGSVv8KNTqU1w-2" value="Presentation layer" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=120;height=20;" parent="1" vertex="1">
+          <mxGeometry x="110" y="270" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-1" value="Web Client UI" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-2">
+          <mxGeometry x="40" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-2" value="LED Lights" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-2">
+          <mxGeometry x="230" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8Q1biNkkGSVv8KNTqU1w-3" value="Business logic layer" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=120;height=20;" parent="1" vertex="1">
+          <mxGeometry x="110" y="420" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-3" value="PGLWebApp" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-3">
+          <mxGeometry x="40" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" edge="1" parent="8Q1biNkkGSVv8KNTqU1w-3" source="ApyLgGRPwe2oz3mvKnIh-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="460" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-4" value="PGLEventmanger" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-3">
+          <mxGeometry x="400" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-5" value="PGLApp" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-3">
+          <mxGeometry x="230" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8Q1biNkkGSVv8KNTqU1w-4" value="Service layer" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=120;height=20;" parent="1" vertex="1">
+          <mxGeometry x="110" y="570" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-7" value="&amp;lt;&amp;lt;HTTP server&amp;gt;&amp;gt;&lt;br&gt;Apache" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-4">
+          <mxGeometry x="40" y="50" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-8" value="&amp;lt;&amp;lt;MQTT Broker&amp;gt;&amp;gt;&lt;br&gt;Mosquitto broker" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-4">
+          <mxGeometry x="230" y="50" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-6" value="&amp;lt;&amp;lt;SQL DB&amp;gt;&amp;gt;&lt;br&gt;MariaDB" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="8Q1biNkkGSVv8KNTqU1w-4">
+          <mxGeometry x="400" y="50" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-3" target="ApyLgGRPwe2oz3mvKnIh-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-5" target="ApyLgGRPwe2oz3mvKnIh-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-12" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-5" target="ApyLgGRPwe2oz3mvKnIh-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-4" target="ApyLgGRPwe2oz3mvKnIh-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-16" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-3" target="ApyLgGRPwe2oz3mvKnIh-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ApyLgGRPwe2oz3mvKnIh-14" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ApyLgGRPwe2oz3mvKnIh-3" target="ApyLgGRPwe2oz3mvKnIh-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

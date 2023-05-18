@@ -1,6 +1,9 @@
 @startuml classes
 set namespaceSeparator none
-skinparam classFontSize 40
+' skinparam classFontSize 40
+' skinparam Fontsize
+skinparam defaultFontSize 50
+
 
 class "PGLMain" as src.PGLMain {
   main() -> None
