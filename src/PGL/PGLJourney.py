@@ -50,24 +50,25 @@ class PGLJourney:
         # Validate roundtrip
         # If not the first entrance (start) and the zone added is zero
         self.__set_milestones_if_complete(zone)
-
+    
     def get_journey_to_string(self) -> str:
         """ Returns the journey as a string. 
 
         Formatted as:
         <start_time>; <journey_time>; <bathroom_time>; <raspberry_pi_id>
-        Returns "No journey" if the journey is not complete.
+        Returns "No journey" if the journey is not complete or no zones have been entered.
         """
-        if not self.__zone_times:  # If the journey is empty
+        if len(self.__zone_times) == 0 or not self.is_journey_complete():
             return "No journey"
+
         journey_time = self.__zone_times[1][-1] - self.__zone_times[1][0]
         bathroom_time = self.__get_bathroom_time()
-        #READ: Should we use hostname or serial number of pi? https://www.raspberrypi-spy.co.uk/2012/09/getting-your-raspberry-pi-serial-number-using-python/
         journey_string = f"{self.__zone_times[1][0]}; {journey_time}; {bathroom_time};{socket.gethostname()}; "
         return journey_string
 
+    
     def __get_bathroom_time(self) -> datetime.timedelta:
-        """ Returns the time spent in the bathroom."""
+        """Returns the time spent in the bathroom."""
         bathroom_time = None
         if self.__milestones['bathroom']:
             bathroom_start = self.__zone_times[self.__last_zone][0]
@@ -76,7 +77,10 @@ class PGLJourney:
                 if time >= bathroom_start:
                     bathroom_end = time
                     break
-            bathroom_time = bathroom_end - bathroom_start
+            if bathroom_end is not None:
+                bathroom_time = bathroom_end - bathroom_start
+            else:
+                bathroom_time = datetime.timedelta()  # Assign a default value if bathroom_end is None
         else:
             bathroom_time = 'N/A'
         return bathroom_time

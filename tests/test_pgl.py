@@ -1,4 +1,10 @@
 # Imports
+import datetime
+import socket
+import time
+
+from PGL.PGLJourney import PGLJourney
+
 from PGL.PGLZoneController import PGLZoneController
 from PGL.PGLModel import PGLModel, PGLZigbeeDevice
 
@@ -101,3 +107,128 @@ def test_light_functions():
 
 # ------------------------------------------------------------------------------------------------------------------------------
 
+
+
+def test_enter_zone():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    journey.enter_zone(1)
+    assert journey._PGLJourney__current_zone == 1
+    assert journey._PGLJourney__zone_times == {1: [journey._PGLJourney__zone_times[1][0]]}
+    assert journey._PGLJourney__milestones == {'complete': False, 'bathroom': False}
+
+    time.sleep(1)  # Wait for 1 second
+
+    journey.enter_zone(2)
+    assert journey._PGLJourney__current_zone == 2
+    assert journey._PGLJourney__zone_times == {1: [journey._PGLJourney__zone_times[1][0]], 2: [journey._PGLJourney__zone_times[2][0]]}
+    assert journey._PGLJourney__milestones == {'complete': False, 'bathroom': False}
+
+    time.sleep(1)  # Wait for 1 second
+
+    journey.enter_zone(1)
+    assert journey._PGLJourney__current_zone == 1
+    assert journey._PGLJourney__zone_times == {1: [journey._PGLJourney__zone_times[1][0], journey._PGLJourney__zone_times[1][1]], 2: [journey._PGLJourney__zone_times[2][0]]}
+    assert journey._PGLJourney__milestones == {'complete': True, 'bathroom': False}
+
+def test_get_journey_to_string():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    journey.enter_zone(1)
+    journey.enter_zone(2)
+    journey.enter_zone(1)
+    journey.enter_zone(3)
+    journey.enter_zone(4)
+    journey.enter_zone(5)
+    journey.enter_zone(4)
+    journey.enter_zone(3)
+    journey.enter_zone(2)
+    journey.enter_zone(1)
+
+    start_time = journey._PGLJourney__zone_times[1][0]
+    journey_time = journey._PGLJourney__zone_times[1][-1] - start_time
+    bathroom_time = journey._PGLJourney__get_bathroom_time()
+    expected_string = f"{start_time}; {journey_time}; {bathroom_time};{socket.gethostname()};"
+
+    obtained_string = journey.get_journey_to_string()
+    obtained_parts = obtained_string.split(";")
+
+    assert obtained_parts[0].strip() == start_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+    assert obtained_parts[1].strip() == str(journey_time)
+    assert obtained_parts[2].strip() == str(bathroom_time)
+    assert obtained_parts[3].strip() == socket.gethostname()
+
+    assert journey.is_journey_complete()  # Check if the journey is complete
+
+    journey = PGLJourney(5, lambda x, y: None)  # Reset the journey to start a new one
+
+    journey.enter_zone(5)
+    obtained_string = journey.get_journey_to_string()
+
+    assert obtained_string.strip() == "No journey"  # Check if obtained_string is exactly equal to "No journey"
+    assert not journey.is_journey_complete()  # Check if the journey is no longer complete
+
+
+# ----------------------------------------------
+def test_get_bathroom_time_with_bathroom():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    # Simulate entering and exiting zones
+    journey.enter_zone(1)
+    journey.enter_zone(2)
+    journey.enter_zone(3)
+    journey.enter_zone(4)
+    journey.enter_zone(5)
+
+    # Set the bathroom milestone using setattr()
+    setattr(journey, '_PGLJourney__milestones', {'bathroom': True})
+
+    bathroom_time = journey._PGLJourney__get_bathroom_time()
+
+    if isinstance(bathroom_time, datetime.timedelta):
+        assert bathroom_time.total_seconds() >= 0
+    else:
+        assert bathroom_time == 'N/A'
+
+def test_get_bathroom_time_without_bathroom():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    # Simulate entering and exiting zones
+    journey.enter_zone(1)
+    journey.enter_zone(2)
+    journey.enter_zone(3)
+    journey.enter_zone(4)
+    journey.enter_zone(5)
+
+    # Simulate no bathroom break
+    bathroom_time = journey._PGLJourney__get_bathroom_time()
+
+    assert bathroom_time == 'N/A'
+
+def test_get_bathroom_time_with_multiple_entries():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    # Simulate entering and exiting zones
+    journey.enter_zone(1)
+    journey.enter_zone(2)
+    journey.enter_zone(3)
+    journey.enter_zone(4)
+    journey.enter_zone(5)
+
+    # Set the bathroom milestone using setattr()
+    setattr(journey, '_PGLJourney__milestones', {'bathroom': True})
+
+    bathroom_time = journey._PGLJourney__get_bathroom_time()
+
+    if isinstance(bathroom_time, datetime.timedelta):
+        assert bathroom_time.total_seconds() >= 0
+    else:
+        assert bathroom_time == 'N/A'
+
+def test_get_bathroom_time_with_no_entries():
+    journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
+
+    # Simulate no entries into the previous zone
+    bathroom_time = journey._PGLJourney__get_bathroom_time()
+
+    assert bathroom_time == 'N/A'
