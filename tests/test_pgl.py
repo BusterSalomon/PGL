@@ -170,7 +170,7 @@ def test_get_journey_to_string():
     assert not journey.is_journey_complete()  # Check if the journey is no longer complete
 
 
-# ----------------------------------------------
+# ------------------------------------------------------------------------------
 def test_get_bathroom_time_with_bathroom():
     journey = PGLJourney(5, lambda x, y: None)  # Replace lambda function with your server API callback
 
@@ -284,3 +284,4 @@ def test_get_zones_devices_map(zone_controller):
 
     # Check if the returned zone_devices_map matches the internal zones_devices_map
     assert zone_devices_map == zone_controller.zones_devices_map
+
