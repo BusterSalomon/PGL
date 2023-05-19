@@ -2,6 +2,7 @@
 import datetime
 import socket
 import time
+import pytest
 
 from PGL.PGLJourney import PGLJourney
 
@@ -232,3 +233,54 @@ def test_get_bathroom_time_with_no_entries():
     bathroom_time = journey._PGLJourney__get_bathroom_time()
 
     assert bathroom_time == 'N/A'
+
+
+# -------------------------------------------------------------------------
+# Test cases for PGLZoneController:
+
+@pytest.fixture
+def zone_controller():
+    # Create a PGLModel with sample devices for testing
+    devices_model = PGLModel()
+    devices_model.sensors_list.append(PGLZigbeeDevice(id_='pir1', type_='pir'))
+    devices_model.actuators_list.append(PGLZigbeeDevice(id_='led1', type_='led'))
+
+    # Create a PGLZoneController instance
+    return PGLZoneController(devices_model=devices_model)
+
+def test_bind_device_to_zone(zone_controller):
+    zone_controller.bind_device_to_zone(zone_id=1, device=PGLZigbeeDevice(id_='pir1', type_='pir'))
+    zone_controller.bind_device_to_zone(zone_id=2, device=PGLZigbeeDevice(id_='led1', type_='led'))
+
+    # Check if devices are correctly bound to zones
+    assert zone_controller.zones_devices_map[1] == {'pir': 'pir1'}
+    assert zone_controller.zones_devices_map[2] == {'led': 'led1'}
+
+def test_get_zone_from_device_id_with_invalid_key():
+    controller = PGLZoneController()
+    zone = controller.get_zone_from_device_id("invalid_device_id")
+    expected_zone = -1  # Default value when key is not found
+    assert zone == expected_zone
+
+def test_get_device_id_from_zone_id_with_valid_key():
+    controller = PGLZoneController()
+    controller.bind_device_to_zone(zone_id=1, device=PGLZigbeeDevice(id_='device1', type_='pir'))
+    controller.bind_device_to_zone(zone_id=2, device=PGLZigbeeDevice(id_='device2', type_='led'))
+    device_id = controller.get_device_id_from_zone_id(zone_id=1, device_type='pir')
+    expected_device_id = 'device1'
+    assert device_id == expected_device_id
+
+def test_get_device_ids_from_zone_ids_with_valid_keys():
+    controller = PGLZoneController()
+    controller.bind_device_to_zone(zone_id=1, device=PGLZigbeeDevice(id_='device1', type_='pir'))
+    controller.bind_device_to_zone(zone_id=2, device=PGLZigbeeDevice(id_='device2', type_='led'))
+    device_ids = controller.get_device_ids_from_zone_ids(zone_ids=[1, 2], types=['pir', 'led'])
+    expected_device_ids = ['device1', 'device2']
+    assert device_ids == expected_device_ids
+
+
+def test_get_zones_devices_map(zone_controller):
+    zone_devices_map = zone_controller.get_zones_devices_map()
+
+    # Check if the returned zone_devices_map matches the internal zones_devices_map
+    assert zone_devices_map == zone_controller.zones_devices_map
