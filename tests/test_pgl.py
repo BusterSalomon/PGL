@@ -285,3 +285,18 @@ def test_get_zones_devices_map(zone_controller):
     # Check if the returned zone_devices_map matches the internal zones_devices_map
     assert zone_devices_map == zone_controller.zones_devices_map
 
+import pytest
+
+def test_set_device_led_states_all_off():
+    controller = PGLZoneController()
+    controller.led_states = {'led1': 'ON', 'led2': 'ON', 'led3': 'ON'}
+    controller.set_device_led_states(None, turn_all_off=True)
+    expected_led_states = {'led1': 'OFF', 'led2': 'OFF', 'led3': 'OFF'}
+    assert controller.led_states == expected_led_states
+
+def test_set_device_led_states_turn_on_zones():
+    controller = PGLZoneController()
+    controller.led_states = {'led1': 'OFF', 'led2': 'OFF', 'led3': 'OFF'}
+    controller.zones_devices_map = {1: {'led': 'led1'}, 2: {'led': 'led2'}, 3: {'led': 'led3'}}
+    controller.set_device_led_states((1, 2))
+    assert controller.led_states == {'led1': 'ON', 'led2': 'ON', 'led3': 'OFF'}
