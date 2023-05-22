@@ -5,8 +5,6 @@ from PGL.PGLZigbee2mqttClient import (PGLZigbee2mqttClient,
 
 # import zone controller
 from PGL.PGLZoneController import PGLZoneController
-a = PGLModel
-
 
 class PGLController:
     """ The controller is responsible for managing events received from zigbee2mqtt and handle them.

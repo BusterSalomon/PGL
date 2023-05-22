@@ -8,8 +8,6 @@ from time import sleep
 from typing import Any, Callable, List, Optional
 from paho.mqtt.client import Client as MqttClient, MQTTMessage
 from paho.mqtt import publish, subscribe
-from PGL.PGLModel import PGLModel
-
 
 class PGLZigbee2mqttMessageType(Enum):
     """ Enumeration with the type of messages that zigbee2mqtt publishes.

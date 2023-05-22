@@ -1,7 +1,7 @@
 from time import sleep
 from datetime import datetime
-from PGLController import PGLController
-from PGLModel import PGLModel, PGLZigbeeDevice
+from PGL.PGLController import PGLController
+from PGL.PGLModel import PGLModel, PGLZigbeeDevice
 
 START_TIME = 10
 END_TIME = 22
