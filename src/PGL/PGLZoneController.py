@@ -105,7 +105,7 @@ class PGLZoneController:
             else:
                 self.led_states[cur_led_id] = "OFF"
 
-    def control_zones(self, device_id, occupancy) -> Optional[dict[str, str]]:
+    def control_zones(self, device_id, occupancy) -> dict[str, str]:
         """ Main control function. 
         
         Takes in device_id of activated pir sensor.
